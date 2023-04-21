@@ -28,25 +28,25 @@ let init_grid_array (n : int) (m : int) (init_value : float) : float array array
 
 let make_grid (width : int) 
               (height : int) 
-              (xbegin, xend : float * float) 
-              (ybegin, yend : float * float) : (float * float) array array = 
-  let xdigit = (xend -. xbegin) /. (float_of_int width) in 
-  let ydigit = (yend -. ybegin) /. (float_of_int height) in 
+              (xmin, xmax : float * float) 
+              (ymin, ymax : float * float) : (float * float) array array = 
+  let xdigit = (xmax -. xmin) /. (float_of_int width) in 
+  let ydigit = (ymax -. ymin) /. (float_of_int height) in 
     Array.init width (fun i -> 
       (Array.init height (fun j -> 
-        (xbegin +. (float_of_int i) *. xdigit, 
-         ybegin +. (float_of_int j) *. ydigit )))) ;; 
+        (xmin +. (float_of_int i) *. xdigit, 
+         ymin +. (float_of_int j) *. ydigit )))) ;; 
 
 let coord_to_pixel x y =
-  let x_pixel = int_of_float (float width *. (x -. xbegin) /. (xend -. xbegin)) in
-  let y_pixel = int_of_float (float height *. (y -. ybegin) /. (yend -. ybegin)) in
+  let x_pixel = int_of_float (float width *. (x -. xmin) /. (xmax -. xmin)) in
+  let y_pixel = int_of_float (float height *. (y -. ymin) /. (ymax -. ymin)) in
   (x_pixel, height - y_pixel) ;; 
 
-let depict_graph = 
+(* let depict_graph = 
   Graphics.open_graph ""; 
   Graphics.resize_window width height;
   Graphics.set_window_title "Mandlebrot Set Viewer";
-  let grid = make_grid width height (xbegin, xend) (ybegin, yend) in 
+  let grid = make_grid width height (xmin, xmax) (ymin, ymax) in 
   for i = 0 to (width - 1) do
     for j  = 0 to (height - 1) do 
       let x, y = grid.(i).(j) in 
@@ -60,8 +60,33 @@ let depict_graph =
     done
   done;
   ignore (Graphics.read_key ()); (* Wait for a key press *)
-  Graphics.close_graph () ;;  
+  Graphics.close_graph () ;;   *)
           
-      
+
+  (* instead of going from coord to pixels, I should try and go from pixels
+     to coordinates. *)
+ (* this implementation fixes the white lines and is overall a nicer pic *)     
+let depict_graph = 
+  Graphics.open_graph ""; 
+  Graphics.resize_window width height;
+  Graphics.set_window_title "Mandlebrot Set Viewer";
+  let delta_x, delta_y = 
+    (xmax -. xmin) /. float width, (ymax -. ymin) /. float height in 
+  for xpixel = 0 to (width - 1) do
+    for ypixel  = 0 to (height - 1) do 
+      let real = delta_x *. float xpixel +. xmin in 
+      let imag = delta_y *. float ypixel +. ymin in 
+      let c  = CNum.define real imag in 
+      if Mandelbrot.in_mandelbrot CNum.zero c then 
+        begin
+          Graphics.set_color Graphics.black; 
+          Graphics.plot xpixel ypixel;
+        end
+    done
+  done;
+  ignore (Graphics.read_key ()); (* Wait for a key press *)
+  Graphics.close_graph () ;; 
+
+
 let () = 
   depict_graph ;; 

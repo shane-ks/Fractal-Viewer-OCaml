@@ -22,7 +22,7 @@ module type ELEMENTS =
 
   val threshold : float 
 
-  val accuracy : int 
+  val max_step : int 
 
   val iter : t -> t -> t 
 
@@ -33,7 +33,7 @@ module type MANDELBROT =
 
   type t = CNum.t
 
-  val accuracy : int 
+  val max_step : int 
 
   val threshold : float 
 
@@ -53,7 +53,7 @@ module MakeMandelbrot (Elements : ELEMENTS)
 
   type t  = CNum.t
 
-  let accuracy = Elements.accuracy
+  let max_step = Elements.max_step
 
   let threshold = Elements.threshold
 
@@ -78,14 +78,13 @@ module MakeMandelbrot (Elements : ELEMENTS)
       else 
        iter_mult (mandelbrot z1 c) (pred count)
     in
-    iter_mult z accuracy 
+    iter_mult z max_step 
   
   end ;; 
 
 module Mandelbrot = MakeMandelbrot (struct 
                                     type t = CNum.t
-                                    let accuracy = Config.accuracy 
+                                    let max_step = Config.max_step 
                                     let threshold = Config.threshold
-                                    let iter z c =
-                                      CNum.add (CNum.mul z z) c
+                                    let iter = Config.define_fractal 
                                     end ) ;;

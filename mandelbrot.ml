@@ -7,13 +7,8 @@
    f(z) = z^2 + c for complex values c, evaluated at z = 0. This code 
    determines which points are in the Mandelbrot set and which are not *)
 
-   (* could perhaps take re(f) = (f + bar(f)) / 2 and im(f) = (f - bar(f)) / 2i
-      for generalized f *)
-
 open ComplexNum ;; 
 open Config ;; 
-
-(* ask question about CNum.t*)
 
 module type ELEMENTS = 
   sig 
@@ -43,7 +38,7 @@ module type MANDELBROT =
 
   val im_f : t -> t -> float 
 
-  val in_mandelbrot : t -> t -> bool 
+  val in_mandelbrot : t -> t -> int * bool 
   
   end ;; 
 
@@ -65,20 +60,20 @@ module MakeMandelbrot (Elements : ELEMENTS)
 
   let im_f z1 z2 = 
     let open CNum in 
-    let two_i = CNum.define 0. 2. in 
+    let two_i = define 0. 2. in 
     let imaginary = 
       mul ((sub (mandelbrot z1 z2) (conj (mandelbrot z1 z2)))) (inv two_i) in 
     imag imaginary
 
-  let in_mandelbrot z c : bool = 
-    let open CNum in 
+  let in_mandelbrot z c : int * bool = 
     let rec iter_mult z1 count = 
-      if magn (mandelbrot z1 c) > threshold then false 
-      else if count = 0 then true 
+      let magnitude = CNum.magn z1 in 
+      if magnitude > threshold then (count, false)
+      else if count = max_step then (count, true) 
       else 
-       iter_mult (mandelbrot z1 c) (pred count)
+       iter_mult (mandelbrot z1 c) (succ count)
     in
-    iter_mult z max_step 
+    iter_mult z 0
   
   end ;; 
 

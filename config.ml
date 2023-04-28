@@ -21,11 +21,11 @@ let xmax = 0.6 ;;
 (* sets the minimum and maximum imaginary value to compute *)
 let ymin = -.1.14 ;;
 let ymax = 1.14 ;;
-let color = false ;; 
+let color = true ;; 
 
 (* sets the max number of iterations of the fractal equation. Increasing the 
    max number of iterations makes it slower but gives a better picture. *)
-let max_step = 50;; 
+let max_step = 25;; 
 (* sets the threshold to stop iterating. Keep as default of 2.1 for z^2 + c*)
 
 let threshold = 2.1 ;;

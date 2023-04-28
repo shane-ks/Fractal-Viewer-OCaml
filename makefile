@@ -4,7 +4,7 @@ complexNum: complexNum.ml
 	ocamlbuild -r -use-ocamlfind complexNum.byte
 
 graph: graph.ml
-	ocamlbuild -pkg graphics -pkg cairo2 -r -use-ocamlfind graph.byte
+	ocamlbuild -pkg graphics -pkg unix -r -use-ocamlfind graph.byte
 
 mandelbrot: mandelbrot.ml
 	ocamlbuild -r -use-ocamlfind mandelbrot.byte

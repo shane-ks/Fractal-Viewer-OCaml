@@ -17,7 +17,7 @@ module type ELEMENTS =
 
   val threshold : float 
 
-  val max_step : int 
+  (* val max_step : int  *)
 
   val iter : t -> t -> t 
 
@@ -28,7 +28,7 @@ module type MANDELBROT =
 
   type t = CNum.t
 
-  val max_step : int 
+  (* val max_step : int  *)
 
   val threshold : float 
 
@@ -38,7 +38,7 @@ module type MANDELBROT =
 
   val im_f : t -> t -> float 
 
-  val in_mandelbrot : t -> t -> int * bool 
+  val in_mandelbrot : t -> t -> int -> int * bool 
   
   end ;; 
 
@@ -48,24 +48,24 @@ module MakeMandelbrot (Elements : ELEMENTS)
 
   type t  = CNum.t
 
-  let max_step = Elements.max_step
+  (* let max_step = Elements.max_step *)
 
   let threshold = Elements.threshold
 
   let mandelbrot = Elements.iter 
 
-  let re_f z1 z2= 
+  let re_f (z1 : t) (z2 : t) : float = 
     let open CNum in 
     (real (add (mandelbrot z1 z2) (conj (mandelbrot z1 z2)))) /. 2. 
 
-  let im_f z1 z2 = 
+  let im_f (z1 : t) (z2 : t) : float = 
     let open CNum in 
     let two_i = define 0. 2. in 
     let imaginary = 
       mul ((sub (mandelbrot z1 z2) (conj (mandelbrot z1 z2)))) (inv two_i) in 
     imag imaginary
 
-  let in_mandelbrot z c : int * bool = 
+  let in_mandelbrot (z : t) (c : t) (max_step : int) : int * bool = 
     let rec iter_mult z1 count = 
       let magnitude = CNum.magn z1 in 
       if magnitude > threshold then (count, false)
@@ -79,7 +79,7 @@ module MakeMandelbrot (Elements : ELEMENTS)
 
 module Mandelbrot = MakeMandelbrot (struct 
                                     type t = CNum.t
-                                    let max_step = Config.max_step 
+                                    (* let max_step = Config.max_step  *)
                                     let threshold = Config.threshold
                                     let iter = Config.define_fractal 
                                     end ) ;;

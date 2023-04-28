@@ -10,89 +10,33 @@ open ComplexNum ;;
 open Graphics ;;
 open Config ;; 
 open Mandelbrot ;;
-open Cairo ;;  
-(*
-let grid = [|
-  [| 1;  2;  3;  4 |];
-  [| 5;  6;  7;  8 |];
-  [| 9; 10; 11; 12 |]
-|]
+open Unix ;; 
 
-let element_1_1 = grid.(0).(0) (* Access the element in the first row and first column *)
-
-grid.(1).(2) <- 42
-let init_grid_array (n : int) (m : int) (init_value : float) : float array array =
-  Array.init n (fun _ -> Array.init m (fun _ -> init_value))
-*)
-
-(* build an NxM grid, default starting pane is x in (-4,4) and y in (-4,4) *) 
-
-(* let make_grid (width : int) 
-              (height : int) 
-              (xmin, xmax : float * float) 
-              (ymin, ymax : float * float) : (float * float) array array = 
-  let xdigit = (xmax -. xmin) /. (float_of_int width) in 
-  let ydigit = (ymax -. ymin) /. (float_of_int height) in 
-    Array.init width (fun i -> 
-      (Array.init height (fun j -> 
-        (xmin +. (float_of_int i) *. xdigit, 
-         ymin +. (float_of_int j) *. ydigit )))) ;;  *)
+exception Program_quit ;; 
 
 
-let initialize_image (rows : int) (col : int) : int array array = 
+(* let initialize_image (rows : int) (col : int) : int array array = 
     Array.init rows (fun i -> 
       (Array.init col (fun j -> 0))) ;; 
 
-  (* instead of going from coord to pixels, I should try and go from pixels
-     to coordinates. *)
- (* this implementation fixes the white lines and is overall a nicer pic *)     
+      let width = 800 ;;
+      let height = 600 ;; 
+      (* sets the minimum and maximum real value to compute *)
+      let xmin = -.2.05 ;;
+      let xmax = 0.6 ;;
+      (* sets the minimum and maximum imaginary value to compute *)
+      let ymin = -.1.14 ;;
+      let ymax = 1.14 ;;
+      let color = false ;;  *)
 
-(* let fractal_image image width height = 
-  let delta_x, delta_y = 
-    (xmax -. xmin) /. float height, (ymax -. ymin) /. float width in 
-  for row_pixel = 0 to (height - 1) do
-    let imag = delta_y *. float row_pixel +. ymin in 
-    for col_pixel  = 0 to (width - 1) do 
-      let real = delta_x *. float col_pixel +. xmin in
-      let c  = CNum.define real imag in 
-      let iter_count, mandelbrot_set = Mandelbrot.in_mandelbrot CNum.zero c in
-      if mandelbrot_set then 
-          image.(row_pixel).(col_pixel) <- Graphics.rgb 0 0 0
-      else if color && not mandelbrot_set then 
-        let col = int_of_float (255. *. (1. -. ((float iter_count) /. (float max_step)))) in 
-        image.(row_pixel).(col_pixel) <- Graphics.rgb col col col ;
-    done
- done ;; *)
-
-(*
-the problem is is that the points 
-pixel (0,0) <-> image.(rows - 1).(0)   
-pixel (1,0) <-> image.(rows - 1).(0)  
-(ymax,0) <-> image.(rows - 1).(0)   
-*)
-(* 
- let fractal_image image rows cols = 
-  let delta_x, delta_y = 
-  (xmax -. xmin) /. float cols, (ymax -. ymin) /. float rows in 
-  for row_pixel = 0 downto (rows - 1) do
-    let imag = delta_y *. float row_pixel +. ymin in 
-    for col_pixel  = 0 to (cols - 1) do
-      let real = delta_x *. float col_pixel +. xmin in
-      let c  = CNum.define real imag in 
-      let iter_count, mandelbrot_set = Mandelbrot.in_mandelbrot CNum.zero c in
-      if mandelbrot_set then 
-          image.(row_pixel).(col_pixel) <- Graphics.rgb 0 0 0
-      else if color && not mandelbrot_set then 
-        let col = int_of_float (255. *. (1. -. ((float iter_count) /. (float max_step)))) in 
-        image.(row_pixel).(col_pixel) <- Graphics.rgb col col col ;
-    done
-  done ;;  *)
-
-
-let depict_graph = 
-  Graphics.open_graph ""; 
-  Graphics.resize_window width height;
-  Graphics.set_window_title "Mandlebrot Set Viewer";
+let depict_fractal (width : int)
+                   (height : int) 
+                   (xmin : float)
+                   (xmax : float)
+                   (ymin : float)
+                   (ymax : float) 
+                   (color : bool)
+                   (max_step : int) = 
   let delta_x, delta_y = 
     (xmax -. xmin) /. float width, (ymax -. ymin) /. float height in 
   for xpixel = 0 to (width - 1) do
@@ -100,28 +44,279 @@ let depict_graph =
     for ypixel  = 0 to (height - 1) do  
       let imag = delta_y *. float ypixel +. ymin in  
       let c  = CNum.define real imag in 
-      let iter_count, mandelbrot_set = Mandelbrot.in_mandelbrot CNum.zero c in
+      let iter_count, mandelbrot_set = Mandelbrot.in_mandelbrot CNum.zero c max_step in
           if mandelbrot_set then 
             begin
               Graphics.set_color Graphics.black; 
               Graphics.plot xpixel ypixel;
             end
           else if color && not mandelbrot_set then 
-            let colg = int_of_float (255. *. (1. -. Stdlib.exp (-.2. *. (float iter_count) /. (float max_step))) ) in 
-            let colb = int_of_float (255. *. (1. -. Stdlib.exp (-.0.5 *. (float iter_count) /. (float max_step))) ) in 
-            let point_color = Graphics.rgb 160 colg colb in 
-            Graphics.set_color point_color;
-            Graphics.plot xpixel ypixel;
+            begin 
+              let colg = int_of_float (255. *. (1. -. Stdlib.exp (-.2. *. (float iter_count) /. (float max_step))) ) in 
+              let colb = int_of_float (255. *. (1. -. Stdlib.exp (-.0.5 *. (float iter_count) /. (float max_step))) ) in 
+              let point_color = Graphics.rgb 160 colg colb in 
+              Graphics.set_color point_color;
+              Graphics.plot xpixel ypixel;
+            end
     done
-  done;
-  ignore (Graphics.read_key ()); (* Wait for a key press *)
-  Graphics.close_graph () ;; 
+  done;;
+  (* ignore (Graphics.read_key ()); (* Wait for a key press *)
+  Graphics.close_graph () ;;  *)
+
+let loading () = 
+  Graphics.set_color Graphics.white;
+  fill_rect 0 0 70 20; 
+  moveto 5 5 ; 
+  Graphics.set_color Graphics.blue;
+  Graphics.set_text_size 75;
+  Graphics.draw_string "Loading...";
+  Graphics.synchronize ();;
+
+let loop () = 
+  let clicked = ref false in 
+  let active = ref true in 
+  let x_min = ref xmin in
+  let x_max = ref xmax in
+  let y_min = ref ymin in
+  let y_max = ref ymax in
+
+  let x_start_box = ref 0 in 
+  let y_start_box = ref 0 in 
+  let x_end_box = ref 0 in 
+  let y_end_box = ref 0 in 
+  
+  let max_iteration = ref max_step in 
+
+  let coord_to_pixel (x_coord : float) (y_coord : float) : int * int = 
+    let xpixel = 
+      int_of_float (((x_coord -. !x_min) /. (!x_max -. !x_min)) *. float width) in 
+    let ypixel = 
+      int_of_float (((y_coord -. !y_min) /. (!y_max -. !y_min)) *. float height) in 
+    xpixel, ypixel 
+  in
+
+  let pixel_to_coord (xpixel : int) (ypixel : int) : float * float = 
+    let delta_x, delta_y = 
+      (!x_max -. !x_min) /. float width, (!y_max -. !y_min) /. float height in 
+    let xcoord = delta_x *. float xpixel +. !x_min in 
+    let ycoord = delta_y *. float ypixel +. !y_min in 
+    xcoord, ycoord 
+  in 
+
+  let rec ui_loop () = 
+    let e = wait_next_event [Button_up; Button_down; Key_pressed] in 
+    if e.button then 
+      begin 
+        if not !clicked then
+          begin
+            clicked := true; 
+            x_start_box := e.mouse_x;
+            y_start_box := e.mouse_y; 
+          end 
+      end 
+    else if !clicked then 
+      begin 
+        clicked := false; 
+        x_end_box := e.mouse_x; 
+        y_end_box := e.mouse_y;  
+        let box = [|(!x_start_box, !y_start_box); (!x_end_box, !y_start_box); 
+                    (!x_end_box, !y_end_box); (!x_start_box, !y_end_box)|] in 
+        Graphics.set_color Graphics.black; 
+        Graphics.set_line_width 5; 
+        Graphics.draw_poly box;
+        Graphics.synchronize ();
+        loading (); 
+        let new_xmin, new_ymin = pixel_to_coord !x_start_box !y_start_box in 
+        let new_xmax, new_ymax = pixel_to_coord !x_end_box !y_end_box in
+        x_min := new_xmin; 
+        x_max := new_xmax; 
+        y_min := new_ymin; 
+        y_max := new_ymax; 
+        max_iteration := int_of_float (1.5 *. float !max_iteration);
+      end 
+    else if e.key = 'q' then 
+        raise Program_quit
+    else 
+      ui_loop () 
+  in 
+  while !active do 
+    clear_graph (); 
+    depict_fractal width
+                   height
+                   !x_min
+                   !x_max 
+                   !y_min 
+                   !y_max
+                   color
+                   !max_iteration;
+    Graphics.synchronize (); 
+    ui_loop ()
+  done ;;
+    
+    
+(* 
+
+let test_rect () = 
+  Graphics.open_graph ""; 
+  Graphics.resize_window width height;
+  Graphics.auto_synchronize false;
+  let box = Array.make 4 (0, 0) in 
+  let clicks = ref 0 in 
+  let init_x, init_y = (ref 0, ref 0) in 
+  let end_x, end_y = (ref 0, ref 0) in 
+  let rec loop () = 
+    let e = wait_next_event [Button_up; Button_down; Mouse_motion; Key_pressed] in 
+    if e.button && (!clicks = 0) then 
+      begin 
+        init_x := e.mouse_x; 
+        init_y := e.mouse_y; 
+        end_x := e.mouse_x; 
+        end_y := e.mouse_y;
+        incr clicks; 
+        box.(0) <- !init_x, !init_y; 
+        box.(1) <- !end_x, !init_y; 
+        box.(2) <- !end_x, !end_y; 
+        box.(3) <- !init_x, !end_y;
+        Graphics.set_color Graphics.black; 
+        Graphics.set_line_width 5; 
+        Graphics.draw_poly box;
+        Graphics.synchronize ();
+        loop (); 
+      end 
+    else if e.button && (!clicks = 1) then 
+      begin 
+        end_x := e.mouse_x; 
+        end_y := e.mouse_y; 
+        incr clicks; 
+        box.(0) <- !init_x, !init_y; 
+        box.(1) <- !end_x, !init_y; 
+        box.(2) <- !end_x, !end_y; 
+        box.(3) <- !init_x, !end_y;
+        clear_graph (); 
+        Graphics.set_color Graphics.black; 
+        Graphics.set_line_width 5; 
+        Graphics.draw_poly box;
+        Graphics.synchronize ();
+      end 
+    else if !clicks <> 0 then 
+      begin 
+        end_x := e.mouse_x; 
+        end_y := e.mouse_y; 
+        incr clicks; 
+        box.(0) <- !init_x, !init_y; 
+        box.(1) <- !end_x, !init_y; 
+        box.(2) <- !end_x, !end_y; 
+        box.(3) <- !init_x, !end_y;
+        clear_graph (); 
+        Graphics.set_color Graphics.black; 
+        Graphics.set_line_width 5; 
+        Graphics.draw_poly box;
+        Graphics.synchronize ();
+        loop (); 
+      end 
+    else loop ()
+  in loop () ;; *)
+
+let test_rect () = 
+  Graphics.open_graph ""; 
+  Graphics.resize_window width height;
+  Graphics.auto_synchronize false;
+  let box = Array.make 4 (0, 0) in 
+  let clicks = ref 0 in 
+  let init_x, init_y = (ref 0, ref 0) in 
+  let end_x, end_y = (ref 0, ref 0) in 
+  while !clicks <= 2 do 
+    let e = wait_next_event [Button_up; Button_down; Mouse_motion; Key_pressed] in 
+    if e.button && (!clicks <> 0) then 
+      begin 
+        end_x := e.mouse_x; 
+        end_y := e.mouse_y; 
+        incr clicks; 
+        box.(0) <- !init_x, !init_y; 
+        box.(1) <- !end_x, !init_y; 
+        box.(2) <- !end_x, !end_y; 
+        box.(3) <- !init_x, !end_y;
+        clear_graph (); 
+        Graphics.set_color Graphics.black; 
+        Graphics.set_line_width 5; 
+        Graphics.draw_poly box;
+        Graphics.synchronize ();
+      end 
+    else if e.button && (!clicks = 0)then 
+      begin
+        init_x := e.mouse_x; 
+        init_y := e.mouse_y; 
+        end_x := e.mouse_x; 
+        end_y := e.mouse_y;
+        incr clicks; 
+        box.(0) <- !init_x, !init_y; 
+        box.(1) <- !end_x, !init_y; 
+        box.(2) <- !end_x, !end_y; 
+        box.(3) <- !init_x, !end_y;
+        Graphics.set_color Graphics.black; 
+        Graphics.set_line_width 5; 
+        Graphics.draw_poly box;
+        Graphics.synchronize ();
+      end 
+    else if !clicks <> 0 then 
+      begin 
+        end_x := e.mouse_x; 
+        end_y := e.mouse_y; 
+        box.(0) <- !init_x, !init_y; 
+        box.(1) <- !end_x, !init_y; 
+        box.(2) <- !end_x, !end_y; 
+        box.(3) <- !init_x, !end_y;
+        clear_graph (); 
+        Graphics.set_color Graphics.black; 
+        Graphics.set_line_width 5; 
+        Graphics.draw_poly box;
+        Graphics.synchronize ();
+      end
+    done ;; 
 
 
+  (* let 
+  let rec loop () = 
+    let clicked = ref false in 
+    if e.button then 
+      begin 
+        if not !clicked then
+          begin 
+            clicked := true; 
+            let init_x, init_y = e.mouse_x, e.mouse_y in 
+            let end_x = ref init_x in 
+            let end_y = ref init_y in 
+            box.(0) <- init_x, init_y; 
+            box.(1) <- init_x, !end_y; 
+            box.(2) <- !end_x, init_y; 
+            box.(3) <- !end_x, !end_y;
+          end
+      end 
+    else if !clicked then 
+      begin
+        clear_graph (); 
+        end_x := e.mouse_x; 
+        end_y := e.mouse_y; 
+        box.(1) <- init_x, !end_y; 
+        box.(2) <- !end_x, init_y; 
+        box.(3) <- !end_x, !end_y; 
+        Graphics.set_color Graphics.black; 
+        Graphics.set_line_width 5; 
+        Graphics.draw_poly box;
+        Graphics.synchronize ();
+      end 
+    else loop () 
+   in loop () ;;   *)
 
-(* instead of changing the pixel one by one, I think it might be faster to 
-   calculate a color matrix and then use Graphics. A color in Graphics has an integer 
-   value which holds actually 3 values in hex between 0 and 255. The rgb function
-   takes int -> int -> color. So can use that.  *)
 let () = 
-  depict_graph ;; 
+  test_rect () ;;
+  
+(* let () = 
+  Graphics.open_graph ""; 
+  Graphics.resize_window width height;
+  Graphics.set_window_title "Fractal Viewer";
+  Graphics.auto_synchronize false;
+  loop (); 
+  close_graph ();;  *)
+
+

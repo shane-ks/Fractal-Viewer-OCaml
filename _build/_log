@@ -1,0 +1,16 @@
+### Starting build.
+# Target: mandelbrot.ml.depends, tags: { extension:ml, file:mandelbrot.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -modules mandelbrot.ml > mandelbrot.ml.depends
+# Target: complexNum.ml.depends, tags: { extension:ml, file:complexNum.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -modules complexNum.ml > complexNum.ml.depends
+# Target: config.ml.depends, tags: { extension:ml, file:config.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -modules config.ml > config.ml.depends
+# Target: complexNum.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:complexNum.cmo, file:complexNum.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -o complexNum.cmo complexNum.ml
+# Target: config.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:config.cmo, file:config.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -o config.cmo config.ml
+# Target: mandelbrot.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:mandelbrot.cmo, file:mandelbrot.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -o mandelbrot.cmo mandelbrot.ml
+# Target: mandelbrot.byte, tags: { byte, dont_link_with, extension:byte, file:mandelbrot.byte, link, ocaml, program, quiet, traverse }
+ocamlfind ocamlc -linkpkg complexNum.cmo config.cmo mandelbrot.cmo -o mandelbrot.byte
+# Compilation successful.

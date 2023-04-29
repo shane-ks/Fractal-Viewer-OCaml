@@ -17,8 +17,6 @@ module type ELEMENTS =
 
   val threshold : float 
 
-  (* val max_step : int  *)
-
   val iter : t -> t -> t 
 
   end ;; 
@@ -47,8 +45,6 @@ module MakeMandelbrot (Elements : ELEMENTS)
   struct 
 
   type t  = CNum.t
-
-  (* let max_step = Elements.max_step *)
 
   let threshold = Elements.threshold
 
@@ -79,7 +75,6 @@ module MakeMandelbrot (Elements : ELEMENTS)
 
 module Mandelbrot = MakeMandelbrot (struct 
                                     type t = CNum.t
-                                    (* let max_step = Config.max_step  *)
                                     let threshold = Config.threshold
                                     let iter = Config.define_fractal 
                                     end ) ;;

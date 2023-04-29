@@ -7,7 +7,7 @@
 with if it is contained or not contained in the Mandelbrot set, as determined 
 by mandelbrot.ml *)
 open ComplexNum ;; 
-open Graphics ;;
+module G = Graphics ;;
 open Config ;; 
 open Mandelbrot ;;
 open Unix ;; 
@@ -47,30 +47,30 @@ let depict_fractal (width : int)
       let iter_count, mandelbrot_set = Mandelbrot.in_mandelbrot CNum.zero c max_step in
           if mandelbrot_set then 
             begin
-              Graphics.set_color Graphics.black; 
-              Graphics.plot xpixel ypixel;
+              G.set_color G.black; 
+              G.plot xpixel ypixel;
             end
           else if color && not mandelbrot_set then 
             begin 
               let colg = int_of_float (255. *. (1. -. Stdlib.exp (-.2. *. (float iter_count) /. (float max_step))) ) in 
               let colb = int_of_float (255. *. (1. -. Stdlib.exp (-.0.5 *. (float iter_count) /. (float max_step))) ) in 
-              let point_color = Graphics.rgb 160 colg colb in 
-              Graphics.set_color point_color;
-              Graphics.plot xpixel ypixel;
+              let point_color = G.rgb 160 colg colb in 
+              G.set_color point_color;
+              G.plot xpixel ypixel;
             end
     done
   done;;
-  (* ignore (Graphics.read_key ()); (* Wait for a key press *)
-  Graphics.close_graph () ;;  *)
+  (* ignore (G.read_key ()); (* Wait for a key press *)
+  G.close_graph () ;;  *)
 
 let loading () = 
-  Graphics.set_color Graphics.white;
+  G.set_color G.white;
   fill_rect 0 0 70 20; 
   moveto 5 5 ; 
-  Graphics.set_color Graphics.blue;
-  Graphics.set_text_size 75;
-  Graphics.draw_string "Loading...";
-  Graphics.synchronize ();;
+  G.set_color G.blue;
+  G.set_text_size 75;
+  G.draw_string "Loading...";
+  G.synchronize ();;
 
 let main_loop () = 
   let clicked = ref false in 
@@ -109,10 +109,10 @@ let main_loop () =
       raise Program_quit
     else
         let box = drag_rect (); 
-        Graphics.set_color Graphics.black; 
-        Graphics.set_line_width 5; 
-        Graphics.draw_poly box;
-        Graphics.synchronize ();
+        G.set_color G.black; 
+        G.set_line_width 5; 
+        G.draw_poly box;
+        G.synchronize ();
         loading (); 
         let xpixel_start, ypixel_start = box.(0) in 
         let xpixel_end, ypixel_end = box.(2) in 
@@ -142,10 +142,10 @@ let main_loop () =
         y_end_box := e.mouse_y;  
         let box = [|(!x_start_box, !y_start_box); (!x_end_box, !y_start_box); 
                     (!x_end_box, !y_end_box); (!x_start_box, !y_end_box)|] in 
-        Graphics.set_color Graphics.black; 
-        Graphics.set_line_width 5; 
-        Graphics.draw_poly box;
-        Graphics.synchronize ();
+        G.set_color G.black; 
+        G.set_line_width 5; 
+        G.draw_poly box;
+        G.synchronize ();
         loading (); 
         let new_xmin, new_ymin = pixel_to_coord !x_start_box !y_start_box in 
         let new_xmax, new_ymax = pixel_to_coord !x_end_box !y_end_box in
@@ -171,15 +171,15 @@ let main_loop () =
                    !y_max
                    color
                    !max_iteration;
-    Graphics.synchronize (); 
+    G.synchronize (); 
     ui_loop ();
   done ;;
     
 
 let drag_rect () : (int * int) array = 
-  (* Graphics.open_graph ""; 
-  Graphics.resize_window width height;
-  Graphics.auto_synchronize false; *)
+  (* G.open_graph ""; 
+  G.resize_window width height;
+  G.auto_synchronize false; *)
   let box = Array.make 4 (0, 0) in 
   let clicks = ref 0 in 
   let init_x, init_y = (ref 0, ref 0) in 
@@ -196,10 +196,10 @@ let drag_rect () : (int * int) array =
         box.(2) <- !end_x, !end_y; 
         box.(3) <- !init_x, !end_y;
         clear_graph (); 
-        Graphics.set_color Graphics.black; 
-        Graphics.set_line_width 5; 
-        Graphics.draw_poly box;
-        Graphics.synchronize ();
+        G.set_color G.black; 
+        G.set_line_width 5; 
+        G.draw_poly box;
+        G.synchronize ();
       end 
     else if e.button && (!clicks = 0)then 
       begin
@@ -212,10 +212,10 @@ let drag_rect () : (int * int) array =
         box.(1) <- !end_x, !init_y; 
         box.(2) <- !end_x, !end_y; 
         box.(3) <- !init_x, !end_y;
-        Graphics.set_color Graphics.black; 
-        Graphics.set_line_width 5; 
-        Graphics.draw_poly box;
-        Graphics.synchronize ();
+        G.set_color G.black; 
+        G.set_line_width 5; 
+        G.draw_poly box;
+        G.synchronize ();
       end 
     else if !clicks <> 0 then 
       begin 
@@ -226,10 +226,10 @@ let drag_rect () : (int * int) array =
         box.(2) <- !end_x, !end_y; 
         box.(3) <- !init_x, !end_y;
         clear_graph (); 
-        Graphics.set_color Graphics.black; 
-        Graphics.set_line_width 5; 
-        Graphics.draw_poly box;
-        Graphics.synchronize ();
+        G.set_color G.black; 
+        G.set_line_width 5; 
+        G.draw_poly box;
+        G.synchronize ();
       end
     done;
     box ;;  
@@ -237,10 +237,10 @@ let drag_rect () : (int * int) array =
 
 
 let () = 
-  Graphics.open_graph ""; 
-  Graphics.resize_window width height;
-  Graphics.set_window_title "Fractal Viewer";
-  Graphics.auto_synchronize false;
+  G.open_graph ""; 
+  G.resize_window width height;
+  G.set_window_title "Fractal Viewer";
+  G.auto_synchronize false;
   main_loop (); 
   close_graph ();; 
 
@@ -267,10 +267,10 @@ let () =
         y_end_box := e.mouse_y;  
         let box = [|(!x_start_box, !y_start_box); (!x_end_box, !y_start_box); 
                     (!x_end_box, !y_end_box); (!x_start_box, !y_end_box)|] in 
-        Graphics.set_color Graphics.black; 
-        Graphics.set_line_width 5; 
-        Graphics.draw_poly box;
-        Graphics.synchronize ();
+        G.set_color G.black; 
+        G.set_line_width 5; 
+        G.draw_poly box;
+        G.synchronize ();
         loading (); 
         let new_xmin, new_ymin = pixel_to_coord !x_start_box !y_start_box in 
         let new_xmax, new_ymax = pixel_to_coord !x_end_box !y_end_box in

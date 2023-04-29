@@ -1,25 +1,10 @@
 ### Starting build.
 # Target: graph.ml.depends, tags: { package(graphics), package(unix), extension:ml, file:graph.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package unix -package graphics -modules graph.ml > graph.ml.depends
-# Target: complexNum.ml.depends, tags: { package(graphics), package(unix), extension:ml, file:complexNum.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package unix -package graphics -modules complexNum.ml > complexNum.ml.depends # cached
-# Target: complexNum.cmo, tags: { package(graphics), package(unix), byte, compile, extension:cmo, extension:ml, file:complexNum.cmo, file:complexNum.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package unix -package graphics -o complexNum.cmo complexNum.ml # cached
-# Target: config.ml.depends, tags: { package(graphics), package(unix), extension:ml, file:config.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package unix -package graphics -modules config.ml > config.ml.depends # cached
-# Target: config.cmo, tags: { package(graphics), package(unix), byte, compile, extension:cmo, extension:ml, file:config.cmo, file:config.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package unix -package graphics -o config.cmo config.ml # cached
-# Target: mandelbrot.ml.depends, tags: { package(graphics), package(unix), extension:ml, file:mandelbrot.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package unix -package graphics -modules mandelbrot.ml > mandelbrot.ml.depends # cached
-# Target: mandelbrot.cmo, tags: { package(graphics), package(unix), byte, compile, extension:cmo, extension:ml, file:mandelbrot.cmo, file:mandelbrot.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package unix -package graphics -o mandelbrot.cmo mandelbrot.ml # cached
-# Target: graph.cmo, tags: { package(graphics), package(unix), byte, compile, extension:cmo, extension:ml, file:graph.cmo, file:graph.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package unix -package graphics -o graph.cmo graph.ml
-+ ocamlfind ocamlc -c -package unix -package graphics -o graph.cmo graph.ml
-File "graph.ml", line 90, characters 6-20:
-90 |   let coord_to_pixel (x_coord : float) (y_coord : float) : int * int = 
-           ^^^^^^^^^^^^^^
-Warning 26 [unused-var]: unused variable coord_to_pixel.
-# Target: graph.byte, tags: { package(graphics), package(unix), byte, dont_link_with, extension:byte, file:graph.byte, link, ocaml, program, quiet, traverse }
-ocamlfind ocamlc -linkpkg -package unix -package graphics complexNum.cmo config.cmo mandelbrot.cmo graph.cmo -o graph.byte
-# Compilation successful.
++ ocamlfind ocamldep -package unix -package graphics -modules graph.ml > graph.ml.depends
+File "graph.ml", line 176, characters 7-9:
+176 |   done ;;
+             ^^
+Error: Syntax error
+Command exited with code 2.
+# Compilation unsuccessful.

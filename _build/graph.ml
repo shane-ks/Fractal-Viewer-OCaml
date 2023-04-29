@@ -72,9 +72,9 @@ let loading () =
   Graphics.draw_string "Loading...";
   Graphics.synchronize ();;
 
-let loop () = 
+let main_loop () = 
   let clicked = ref false in 
-  let active = ref true in 
+  (* let active = ref true in  *)
   let x_min = ref xmin in
   let x_max = ref xmax in
   let y_min = ref ymin in
@@ -103,7 +103,28 @@ let loop () =
     xcoord, ycoord 
   in 
 
-  let rec ui_loop () = 
+  let ui_loop () = 
+    let e = wait_next_event [Key_pressed] in
+    if e.key = 'q' then 
+      raise Program_quit
+    else
+        let box = drag_rect (); 
+        Graphics.set_color Graphics.black; 
+        Graphics.set_line_width 5; 
+        Graphics.draw_poly box;
+        Graphics.synchronize ();
+        loading (); 
+        let xpixel_start, ypixel_start = box.(0) in 
+        let xpixel_end, ypixel_end = box.(2) in 
+        let new_xmin, new_ymin = pixel_to_coord xpixel_start, ypixel_start in 
+        let new_xmax, new_ymax = pixel_to_coord xpixel_end, ypixel_end in
+        x_min := new_xmin; 
+        x_max := new_xmax; 
+        y_min := new_ymin; 
+        y_max := new_ymax; 
+        max_iteration := int_of_float (1.5 *. float !max_iteration);
+  in 
+  (* let rec ui_loop () = 
     let e = wait_next_event [Button_up; Button_down; Key_pressed] in 
     if e.button then 
       begin 
@@ -137,9 +158,10 @@ let loop () =
     else if e.key = 'q' then 
         raise Program_quit
     else 
-      ui_loop () 
-  in 
-  while !active do 
+      ui_loop ()
+    in  *)
+
+  while true do 
     clear_graph (); 
     depict_fractal width
                    height
@@ -150,77 +172,14 @@ let loop () =
                    color
                    !max_iteration;
     Graphics.synchronize (); 
-    ui_loop ()
+    ui_loop ();
   done ;;
     
-    
-(* 
 
-let test_rect () = 
-  Graphics.open_graph ""; 
+let drag_rect () : (int * int) array = 
+  (* Graphics.open_graph ""; 
   Graphics.resize_window width height;
-  Graphics.auto_synchronize false;
-  let box = Array.make 4 (0, 0) in 
-  let clicks = ref 0 in 
-  let init_x, init_y = (ref 0, ref 0) in 
-  let end_x, end_y = (ref 0, ref 0) in 
-  let rec loop () = 
-    let e = wait_next_event [Button_up; Button_down; Mouse_motion; Key_pressed] in 
-    if e.button && (!clicks = 0) then 
-      begin 
-        init_x := e.mouse_x; 
-        init_y := e.mouse_y; 
-        end_x := e.mouse_x; 
-        end_y := e.mouse_y;
-        incr clicks; 
-        box.(0) <- !init_x, !init_y; 
-        box.(1) <- !end_x, !init_y; 
-        box.(2) <- !end_x, !end_y; 
-        box.(3) <- !init_x, !end_y;
-        Graphics.set_color Graphics.black; 
-        Graphics.set_line_width 5; 
-        Graphics.draw_poly box;
-        Graphics.synchronize ();
-        loop (); 
-      end 
-    else if e.button && (!clicks = 1) then 
-      begin 
-        end_x := e.mouse_x; 
-        end_y := e.mouse_y; 
-        incr clicks; 
-        box.(0) <- !init_x, !init_y; 
-        box.(1) <- !end_x, !init_y; 
-        box.(2) <- !end_x, !end_y; 
-        box.(3) <- !init_x, !end_y;
-        clear_graph (); 
-        Graphics.set_color Graphics.black; 
-        Graphics.set_line_width 5; 
-        Graphics.draw_poly box;
-        Graphics.synchronize ();
-      end 
-    else if !clicks <> 0 then 
-      begin 
-        end_x := e.mouse_x; 
-        end_y := e.mouse_y; 
-        incr clicks; 
-        box.(0) <- !init_x, !init_y; 
-        box.(1) <- !end_x, !init_y; 
-        box.(2) <- !end_x, !end_y; 
-        box.(3) <- !init_x, !end_y;
-        clear_graph (); 
-        Graphics.set_color Graphics.black; 
-        Graphics.set_line_width 5; 
-        Graphics.draw_poly box;
-        Graphics.synchronize ();
-        loop (); 
-      end 
-    else loop ()
-  in loop () ;; *)
-
-let test_rect () = 
-  Graphics.open_graph ""; 
-  Graphics.resize_window width height;
-  Graphics.auto_synchronize false;
+  Graphics.auto_synchronize false; *)
   let box = Array.make 4 (0, 0) in 
   let clicks = ref 0 in 
   let init_x, init_y = (ref 0, ref 0) in 
@@ -272,51 +231,56 @@ let test_rect () =
         Graphics.draw_poly box;
         Graphics.synchronize ();
       end
-    done ;; 
+    done;
+    box ;;  
 
 
-  (* let 
-  let rec loop () = 
-    let clicked = ref false in 
-    if e.button then 
-      begin 
-        if not !clicked then
-          begin 
-            clicked := true; 
-            let init_x, init_y = e.mouse_x, e.mouse_y in 
-            let end_x = ref init_x in 
-            let end_y = ref init_y in 
-            box.(0) <- init_x, init_y; 
-            box.(1) <- init_x, !end_y; 
-            box.(2) <- !end_x, init_y; 
-            box.(3) <- !end_x, !end_y;
-          end
-      end 
-    else if !clicked then 
-      begin
-        clear_graph (); 
-        end_x := e.mouse_x; 
-        end_y := e.mouse_y; 
-        box.(1) <- init_x, !end_y; 
-        box.(2) <- !end_x, init_y; 
-        box.(3) <- !end_x, !end_y; 
-        Graphics.set_color Graphics.black; 
-        Graphics.set_line_width 5; 
-        Graphics.draw_poly box;
-        Graphics.synchronize ();
-      end 
-    else loop () 
-   in loop () ;;   *)
 
 let () = 
-  test_rect () ;;
-  
-(* let () = 
   Graphics.open_graph ""; 
   Graphics.resize_window width height;
   Graphics.set_window_title "Fractal Viewer";
   Graphics.auto_synchronize false;
-  loop (); 
-  close_graph ();;  *)
+  main_loop (); 
+  close_graph ();; 
+
+(* let () = 
+  drag_rect () ;;  *)
 
 
+(* 
+  let rec ui_loop () = 
+    let e = wait_next_event [Button_up; Button_down; Key_pressed] in 
+    if e.button then 
+      begin 
+        if not !clicked then
+          begin
+            clicked := true; 
+            x_start_box := e.mouse_x;
+            y_start_box := e.mouse_y; 
+          end 
+      end 
+    else if !clicked then 
+      begin 
+        clicked := false; 
+        x_end_box := e.mouse_x; 
+        y_end_box := e.mouse_y;  
+        let box = [|(!x_start_box, !y_start_box); (!x_end_box, !y_start_box); 
+                    (!x_end_box, !y_end_box); (!x_start_box, !y_end_box)|] in 
+        Graphics.set_color Graphics.black; 
+        Graphics.set_line_width 5; 
+        Graphics.draw_poly box;
+        Graphics.synchronize ();
+        loading (); 
+        let new_xmin, new_ymin = pixel_to_coord !x_start_box !y_start_box in 
+        let new_xmax, new_ymax = pixel_to_coord !x_end_box !y_end_box in
+        x_min := new_xmin; 
+        x_max := new_xmax; 
+        y_min := new_ymin; 
+        y_max := new_ymax; 
+        max_iteration := int_of_float (1.5 *. float !max_iteration);
+      end 
+    else if e.key = 'q' then 
+        raise Program_quit
+    else 
+      ui_loop ()  *)

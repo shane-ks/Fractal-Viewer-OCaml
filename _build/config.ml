@@ -25,7 +25,7 @@ let ymin = -.1.14 ;;
 let ymax = 1.14 ;;
 
 (* sets the color setting *)
-let color = false ;; 
+let color = true ;; 
 
 (* sets the max number of iterations of the fractal equation. Increasing the 
    max number of iterations makes it slower but gives a better picture. *)

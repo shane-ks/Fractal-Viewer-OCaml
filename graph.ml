@@ -12,14 +12,6 @@ open Config ;;
 open Mandelbrot ;;
 open Unix ;; 
 
-(* I think I should have the function depict_fractal output a color matrix... 
-   it might be more versatile. *)
-
-
-let initialize_image (width : int) (height : int) : int array array = 
-  Array.make height (Array.make width 0) ;; 
-
-
 let depict_fractal (width : int)
                    (height : int) 
                    (xmin : float)
@@ -28,10 +20,9 @@ let depict_fractal (width : int)
                    (ymax : float) 
                    (color : bool)
                    (max_step : int)
-                   (init_image : int array array) : unit  = 
-  (* let blank_image = initialize_image Config.width Config.height in  *)
+                   (init_image : int array array) 
+                   : int array array  = 
   let mandelbrot_calculation (xpixel : int) (ypixel : int) : int = 
-    begin
       let delta_x, delta_y = 
         (xmax -. xmin) /. float width, (ymax -. ymin) /. float height in 
       let real = (delta_x *. float xpixel +. xmin) in 
@@ -39,37 +30,28 @@ let depict_fractal (width : int)
       let c = CNum.define real imag in 
       let iter_count, mandelbrot_set = 
         Mandelbrot.in_mandelbrot CNum.zero c max_step in 
-      if mandelbrot_set then G.black
+      if mandelbrot_set then G.rgb 0 0 0 
       else 
-        begin
           if color && not mandelbrot_set then 
-        (* perhaps could implement function that matches color selection with 
-          a color function *)
             let colg = 
               int_of_float 
                 (255. *. (1. -. Stdlib.exp (-.2. *. (float iter_count) 
-                  /. (float max_step))) ) in 
+                  /. (float max_step)))) in 
             let colb = 
               int_of_float 
                 (255. *. (1. -. Stdlib.exp (-.0.5 *. (float iter_count) 
                   /. (float max_step))) ) in 
             G.rgb 160 colg colb 
           else G.rgb 255 255 255
-        end 
-    end 
   in
-  (* first iteri is going over the rows the second is going over columns *)
-  Array.iteri  (fun i row -> 
-    Array.iteri (fun j current_color -> 
-      init_image.(i).(j) <- mandelbrot_calculation j i) row) init_image ;;
-  
+  Array.mapi  (fun i row -> 
+    Array.mapi (fun j _current_color -> 
+      mandelbrot_calculation j i) row) init_image ;;
   
 
 
-
-
-
-(* let depict_fractal (width : int)
+(* 
+let depict_fractal (width : int)
                    (height : int) 
                    (xmin : float)
                    (xmax : float)

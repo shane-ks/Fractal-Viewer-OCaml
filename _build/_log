@@ -20,5 +20,5 @@ ocamlfind ocamlc -c -package graphics -o graph.cmo graph.ml # cached
 # Target: controller.cmo, tags: { package(graphics), byte, compile, extension:cmo, extension:ml, file:controller.cmo, file:controller.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package graphics -o controller.cmo controller.ml # cached
 # Target: controller.byte, tags: { package(graphics), byte, dont_link_with, extension:byte, file:controller.byte, link, ocaml, program, quiet, traverse }
-ocamlfind ocamlc -linkpkg -package graphics complexNum.cmo config.cmo mandelbrot.cmo graph.cmo controller.cmo -o controller.byte # cached
+ocamlfind ocamlc -linkpkg -package graphics complexNum.cmo config.cmo mandelbrot.cmo graph.cmo controller.cmo -o controller.byte
 # Compilation successful.

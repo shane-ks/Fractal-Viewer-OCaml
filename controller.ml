@@ -24,7 +24,8 @@ let ui_loop (x_min : float ref)
             (y_min : float ref)
             (y_max : float ref)
             (max_iteration : int ref)
-            (quit : bool ref) : unit = 
+            (quit : bool ref) 
+            : unit = 
   let fractal_bkg = G.get_image 0 0 Config.width Config.height in
   let pane = Array.make 4 (0, 0) in 
   let clicks = ref 0 in 
@@ -49,7 +50,20 @@ let ui_loop (x_min : float ref)
   let select_pane () : (int * int) array = 
     while !clicks <= 2 do 
       let e = G.wait_next_event [Button_up; Button_down; Mouse_motion; Key_pressed] in 
-      if e.button && (!clicks <> 0) then 
+      if e.key = 'q' then 
+        begin
+          quit := true; 
+          clicks := 3; 
+        end
+      else if e.key = 'e' then 
+        begin
+          pane.(0) <- 0, 0; 
+          pane.(1) <- Config.width, 0; 
+          pane.(2) <- Config.width, Config.height; 
+          pane.(3) <- 0, Config.height;
+          clicks := 3
+        end
+      else if e.button && (!clicks <> 0) then 
         begin 
           end_x := e.mouse_x; 
           end_y := e.mouse_y; 

@@ -70,7 +70,6 @@ let ui_loop (x_min : float ref)
             (quit : bool ref) 
             : unit = 
   let fractal_bkg = G.get_image 0 0 Config.width Config.height in
-  let clicks = ref 0 in 
   let pane = Array.make 4 (0, 0) in
   let init_x, init_y = (ref 0, ref 0) in 
   let end_x, end_y = (ref Config.width, ref Config.height) in 
@@ -97,15 +96,19 @@ let ui_loop (x_min : float ref)
       banner#draw (); 
     if click_count < 2 then 
       begin
-        if e.key = 'q' then 
-          (quit := true;
-          select_pane (click_count + 2))
+        if e.key = 'q' then
+          begin  
+            quit := true;
+            select_pane (click_count + 2)
+          end 
         else if e.key = 'e' then 
-            (pane.(0) <- 0, 0; 
+          begin
+            pane.(0) <- 0, 0; 
             pane.(1) <- Config.width, 0; 
             pane.(2) <- Config.width, Config.height; 
             pane.(3) <- 0, Config.height;
-            select_pane (click_count + 2))
+            select_pane (click_count + 2);
+          end
         else if e.button && (click_count = 0) then 
           begin
             init_x := e.mouse_x; 
@@ -139,11 +142,13 @@ let ui_loop (x_min : float ref)
           select_pane click_count
         end
     else
-      (banner#update_pos !end_x !end_y !x_min !x_max !y_min !y_max; 
-      banner#update_pos_text (); 
-      banner#set_loading true;
-      banner#draw ();
-      pane)  
+      begin
+        banner#update_pos !end_x !end_y !x_min !x_max !y_min !y_max; 
+        banner#update_pos_text (); 
+        banner#set_loading true;
+        banner#draw ();
+        pane
+      end 
 
 
     (* while !clicks < 2 do 

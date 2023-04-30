@@ -6,6 +6,7 @@
 (* Description: This file graphs the points in a grid with a color associated 
 with if it is contained or not contained in the Mandelbrot set, as determined 
 by mandelbrot.ml *)
+
 open ComplexNum ;; 
 module G = Graphics ;;
 open Graphics ;; 
@@ -79,14 +80,14 @@ let depict_fractal (width : int)
             end
           else if color && not mandelbrot_set then 
             begin 
-              let colg = 
-                int_of_float 
-                  (255. *. (1. -. Stdlib.exp (-.2. *. (float iter_count) 
-                    /. (float max_step))) ) in 
-              let colb = 
-                int_of_float 
-                  (255. *. (1. -. Stdlib.exp (-.0.5 *. (float iter_count) 
-                    /. (float max_step))) ) in 
+              let color_function (growth : float) = 
+                (growth *. (float iter_count) /. (float max_step))
+                |> Stdlib.exp 
+                |> (-.) 1.
+                |> ( *. ) 255. 
+                |> int_of_float in 
+              let colg = color_function (-.2.) in  
+              let colb = color_function (-.0.5) in 
               let point_color = G.rgb 160 colg colb in 
               G.set_color point_color;
               G.plot xpixel ypixel;

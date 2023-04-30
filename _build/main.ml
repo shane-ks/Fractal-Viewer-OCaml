@@ -16,7 +16,6 @@ module G = Graphics ;;
 open Config ;; 
 open Graph ;; 
 open Mandelbrot ;;
-exception Program_quit ;; 
 
 
 
@@ -44,6 +43,14 @@ let main_loop () =
                          !y_max
                          color
                          !max_iteration;
+    (* G.draw_image (Graph.depict_fractal width
+                         height
+                         !x_min
+                         !x_max 
+                         !y_min 
+                         !y_max
+                         color
+                         !max_iteration) 0 0 ; *)
     G.synchronize (); 
     Controller.ui_loop x_min 
                        x_max 
@@ -51,7 +58,6 @@ let main_loop () =
                        y_max
                        max_iteration
                        quit_loop; 
-    Controller.loading (); 
   done ;; 
   
 let () = 

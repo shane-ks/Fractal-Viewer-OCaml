@@ -25,7 +25,7 @@ class type widget =
     method update_text : () -> () 
   end ;;  *)
 
-class banner = 
+class widget_banner = 
   object
     val widget_color = G.rgb 43 43 43
     val mutable location = 0, 0 
@@ -54,8 +54,8 @@ class banner =
         Graph.pixel_to_coord xpixel ypixel x_min x_max y_min y_max in 
       pos_real <- pos_x; 
       pos_imag <- pos_y
-    method toggle_loading () = 
-      loading <- not loading 
+    method set_loading (status : bool) = 
+      loading <- status 
     method get_widget_color () = widget_color 
     method get_text_color () = text_color 
     method draw () = 
@@ -69,6 +69,7 @@ class banner =
           G.draw_string load_status;
           G.moveto 80 5 ;
           G.draw_string pos;  
+          G.synchronize ();
         end 
       in
       if loading then 
@@ -77,7 +78,8 @@ class banner =
         generate_banner ("Loaded     | ") pos_text 
   end ;; 
 
-
+let banner = new widget_banner ;; 
+(* 
 let loading () = 
   begin
     G.set_color (G.rgb 43 43 43);
@@ -124,7 +126,7 @@ let cursor_pos (xpos : int)
       (string_of_float real) ^ " + " ^ (string_of_float imag) ^ "i" in 
     G.draw_string ("Position: " ^ pos_string); 
     G.synchronize ()
-  end
+  end *)
 
 let ui_loop (x_min : float ref) 
             (x_max : float ref)
@@ -150,24 +152,20 @@ let ui_loop (x_min : float ref)
       G.set_color G.black; 
       G.set_line_width 5; 
       G.draw_poly pane;
-      G.synchronize ();
+      banner#draw ();
     end
   in
-
   let select_pane () : (int * int) array = 
+    banner#set_loading false; 
     while !clicks < 2 do 
       let e = G.wait_next_event [Button_up; Button_down; Mouse_motion; Key_pressed] in 
-      cursor_pos e.mouse_x 
-                 e.mouse_y 
-                 !x_min 
-                 !x_max
-                 !y_min
-                 !y_max; 
-      loaded ();
+      banner#update_pos e.mouse_x e.mouse_y !x_min !x_max !y_min !y_max; 
+      banner#update_pos_text (); 
+      banner#draw (); 
       if e.key = 'q' then 
         begin
           quit := true; 
-          clicks := 3; 
+          clicks := 5; 
         end
       else if e.key = 'e' then 
         begin
@@ -177,20 +175,15 @@ let ui_loop (x_min : float ref)
           pane.(3) <- 0, Config.height;
           clicks := 5
         end
-      else if e.button && (!clicks <> 0) then 
+      else if e.button && (!clicks = 1) then 
         begin 
           end_x := e.mouse_x; 
           end_y := e.mouse_y; 
           incr clicks; 
           update_selection ();
-          cursor_pos e.mouse_x 
-                 e.mouse_y 
-                 !x_min 
-                 !x_max
-                 !y_min
-                 !y_max; 
+          G.synchronize ();
         end 
-      else if e.button && (!clicks = 0)then 
+      else if e.button && (!clicks = 0) then 
         begin
           init_x := e.mouse_x; 
           init_y := e.mouse_y; 
@@ -198,26 +191,23 @@ let ui_loop (x_min : float ref)
           end_y := e.mouse_y;
           incr clicks; 
           update_selection ();
-          cursor_pos e.mouse_x 
-                 e.mouse_y 
-                 !x_min 
-                 !x_max
-                 !y_min
-                 !y_max; 
+          G.synchronize ();
         end 
       else if !clicks <> 0 then  
         begin 
           end_x := e.mouse_x; 
           end_y := e.mouse_y; 
+          banner#update_pos e.mouse_x e.mouse_y !x_min !x_max !y_min !y_max; 
+          banner#update_pos_text (); 
           update_selection ();
-          cursor_pos e.mouse_x 
-                 e.mouse_y 
-                 !x_min 
-                 !x_max
-                 !y_min
-                 !y_max; 
+          banner#draw (); 
+          G.synchronize ();
         end
     done;
+    banner#update_pos !end_x !end_y !x_min !x_max !y_min !y_max; 
+    banner#update_pos_text (); 
+    banner#set_loading true;
+    banner#draw ();
     pane ; 
   in 
   let e = G.wait_next_event [Key_pressed; Button_up; Mouse_motion; Button_down] in
@@ -229,7 +219,6 @@ let ui_loop (x_min : float ref)
       G.set_line_width 5; 
       let pane = select_pane () in 
       G.synchronize ();
-      loading (); 
       let xpixel_start, ypixel_start = pane.(0) in 
       let xpixel_end, ypixel_end = pane.(2) in 
       let new_xmin, new_ymin = 

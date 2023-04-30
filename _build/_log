@@ -1,6 +1,6 @@
 ### Starting build.
 # Target: main.ml.depends, tags: { package(graphics), extension:ml, file:main.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package graphics -modules main.ml > main.ml.depends # cached
+ocamlfind ocamldep -package graphics -modules main.ml > main.ml.depends
 # Target: config.ml.depends, tags: { package(graphics), extension:ml, file:config.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package graphics -modules config.ml > config.ml.depends # cached
 # Target: complexNum.ml.depends, tags: { package(graphics), extension:ml, file:complexNum.ml, ocaml, ocamldep, quiet, traverse }
@@ -22,7 +22,7 @@ ocamlfind ocamlc -c -package graphics -o graph.cmo graph.ml # cached
 # Target: controller.cmo, tags: { package(graphics), byte, compile, extension:cmo, extension:ml, file:controller.cmo, file:controller.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package graphics -o controller.cmo controller.ml # cached
 # Target: main.cmo, tags: { package(graphics), byte, compile, extension:cmo, extension:ml, file:main.cmo, file:main.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package graphics -o main.cmo main.ml # cached
+ocamlfind ocamlc -c -package graphics -o main.cmo main.ml
 # Target: main.byte, tags: { package(graphics), byte, dont_link_with, extension:byte, file:main.byte, link, ocaml, program, quiet, traverse }
 ocamlfind ocamlc -linkpkg -package graphics complexNum.cmo config.cmo mandelbrot.cmo graph.cmo controller.cmo main.cmo -o main.byte
 # Compilation successful.

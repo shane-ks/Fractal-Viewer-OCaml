@@ -7,8 +7,7 @@
 with if it is contained or not contained in the Mandelbrot set, as determined 
 by mandelbrot.ml *)
 open ComplexNum ;; 
-module G = Graphics ;;
-open Config ;; 
+module G = Graphics ;; 
 open Mandelbrot ;;
 open Unix ;; 
 

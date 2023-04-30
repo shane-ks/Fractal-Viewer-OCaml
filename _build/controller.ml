@@ -8,29 +8,11 @@ module G = Graphics ;;
 open Graphics ;; 
 open Config ;; 
 
-(* 
-class type widget = 
-  object 
-    val widget_color : color
-    val mutable location : int * int 
-    val width : int 
-    val height : int 
-    val text_color : color 
-    val text : string 
-    method get_width : () -> int 
-    method get_height : () -> int 
-    method get_widget_color : () -> color 
-    method get_text_color : () -> color 
-    method draw : () -> () 
-    method update_text : () -> () 
-  end ;;  *)
-
 class widget_banner = 
   object
     val widget_color = G.rgb 43 43 43
-    val mutable location = 0, 0 
-    val width = Config.width
-    val height = Config.height
+    val banner_width = Config.width
+    val banner_height = 20
     val text_color = G.white 
     val mutable loading = false 
     val mutable pos_real = 0. 
@@ -62,7 +44,7 @@ class widget_banner =
       let generate_banner (load_status : string) (pos : string) = 
         begin
           G.set_color (G.rgb 43 43 43);
-          G.fill_rect 0 0 Config.width 20;
+          G.fill_rect 0 0 banner_width banner_height;
           G.set_color G.white;
           G.set_text_size 50;
           G.moveto 5 5 ; 
@@ -79,54 +61,6 @@ class widget_banner =
   end ;; 
 
 let banner = new widget_banner ;; 
-(* 
-let loading () = 
-  begin
-    G.set_color (G.rgb 43 43 43);
-    G.fill_rect 0 0 70 20; 
-    G.moveto 5 5 ; 
-    G.set_color G.white;
-    G.set_text_size 75;
-    G.draw_string "Loading... | ";
-    G.synchronize ()
-  end ;; 
-
-let loaded () = 
-  begin
-    G.set_color (G.rgb 43 43 43);
-    G.fill_rect 0 0 70 20; 
-    G.moveto 5 5 ; 
-    G.set_color G.white;
-    G.set_text_size 75;
-    G.draw_string "Loaded     | ";
-    G.synchronize ()
-  end ;; 
-
-let cursor_pos (xpos : int)
-               (ypos : int) 
-               (x_min : float)
-               (x_max : float)
-               (y_min : float)
-               (y_max : float) 
-               : unit = 
-  begin
-    let real, imag = 
-      Graph.pixel_to_coord xpos
-                           ypos 
-                           x_min
-                           x_max
-                           y_min
-                           y_max in 
-    G.set_color (G.rgb 43 43 43);
-    G.fill_rect 0 0 Config.width 20; 
-    G.moveto 80 5 ; 
-    G.set_color G.white;
-    G.set_text_size 50;
-    let pos_string = 
-      (string_of_float real) ^ " + " ^ (string_of_float imag) ^ "i" in 
-    G.draw_string ("Position: " ^ pos_string); 
-    G.synchronize ()
-  end *)
 
 let ui_loop (x_min : float ref) 
             (x_max : float ref)
@@ -149,15 +83,70 @@ let ui_loop (x_min : float ref)
       pane.(3) <- !init_x, !end_y;
       G.clear_graph (); 
       G.draw_image fractal_bkg 0 0; 
-      G.set_color G.black; 
-      G.set_line_width 5; 
+      G.set_color (G.rgb 43 43 43); 
+      G.set_line_width 3; 
       G.draw_poly pane;
       banner#draw ();
     end
   in
-  let select_pane () : (int * int) array = 
+  let rec select_pane (click_count : int) : (int * int) array = 
     banner#set_loading false; 
-    while !clicks < 2 do 
+    let e = G.wait_next_event [Button_up; Button_down; Mouse_motion; Key_pressed] in 
+      banner#update_pos e.mouse_x e.mouse_y !x_min !x_max !y_min !y_max; 
+      banner#update_pos_text (); 
+      banner#draw (); 
+    if click_count < 2 then 
+      begin
+        if e.key = 'q' then 
+          (quit := true;
+          select_pane (click_count + 2))
+        else if e.key = 'e' then 
+            (pane.(0) <- 0, 0; 
+            pane.(1) <- Config.width, 0; 
+            pane.(2) <- Config.width, Config.height; 
+            pane.(3) <- 0, Config.height;
+            select_pane (click_count + 2))
+        else if e.button && (click_count = 0) then 
+          begin
+            init_x := e.mouse_x; 
+            init_y := e.mouse_y; 
+            end_x := e.mouse_x; 
+            end_y := e.mouse_y;
+            update_selection ();
+            G.synchronize ();
+            select_pane (succ click_count)
+          end 
+        else if e.button && (click_count = 1) then
+          begin 
+            end_x := e.mouse_x; 
+            end_y := e.mouse_y; 
+            update_selection ();
+            G.synchronize ();
+            select_pane (succ click_count)
+          end
+        else if click_count <> 0 then  
+          begin 
+            end_x := e.mouse_x; 
+            end_y := e.mouse_y; 
+            banner#update_pos e.mouse_x e.mouse_y !x_min !x_max !y_min !y_max; 
+            banner#update_pos_text (); 
+            update_selection ();
+            banner#draw (); 
+            G.synchronize ();
+            select_pane click_count
+          end
+        else 
+          select_pane click_count
+        end
+    else
+      (banner#update_pos !end_x !end_y !x_min !x_max !y_min !y_max; 
+      banner#update_pos_text (); 
+      banner#set_loading true;
+      banner#draw ();
+      pane)  
+
+
+    (* while !clicks < 2 do 
       let e = G.wait_next_event [Button_up; Button_down; Mouse_motion; Key_pressed] in 
       banner#update_pos e.mouse_x e.mouse_y !x_min !x_max !y_min !y_max; 
       banner#update_pos_text (); 
@@ -203,41 +192,31 @@ let ui_loop (x_min : float ref)
           banner#draw (); 
           G.synchronize ();
         end
-    done;
-    banner#update_pos !end_x !end_y !x_min !x_max !y_min !y_max; 
-    banner#update_pos_text (); 
-    banner#set_loading true;
-    banner#draw ();
-    pane ; 
+    done; *)
   in 
-  let e = G.wait_next_event [Key_pressed; Button_up; Mouse_motion; Button_down] in
-    if e.key = 'q' then quit := true
-    else if e.key = 'e' then 
-      max_iteration := int_of_float (1.5 *. float !max_iteration)
-    else 
-      G.set_color G.black; 
-      G.set_line_width 5; 
-      let pane = select_pane () in 
-      G.synchronize ();
-      let xpixel_start, ypixel_start = pane.(0) in 
-      let xpixel_end, ypixel_end = pane.(2) in 
-      let new_xmin, new_ymin = 
-        Graph.pixel_to_coord xpixel_start 
-                             ypixel_start 
-                             !x_min
-                             !x_max
-                             !y_min
-                             !y_max in 
-      let new_xmax, new_ymax = 
-        Graph.pixel_to_coord xpixel_end 
-                             ypixel_end 
-                             !x_min
-                             !x_max
-                             !y_min
-                             !y_max in
-      x_min := new_xmin; 
-      x_max := new_xmax; 
-      y_min := new_ymin; 
-      y_max := new_ymax; 
-      max_iteration := int_of_float (1.5 *. float !max_iteration);;
+    G.set_color G.black; 
+    G.set_line_width 5; 
+    let pane = select_pane 0 in 
+    G.synchronize ();
+    let xpixel_start, ypixel_start = pane.(0) in 
+    let xpixel_end, ypixel_end = pane.(2) in 
+    let new_xmin, new_ymin = 
+      Graph.pixel_to_coord xpixel_start 
+                            ypixel_start 
+                            !x_min
+                            !x_max
+                            !y_min
+                            !y_max in 
+    let new_xmax, new_ymax = 
+      Graph.pixel_to_coord xpixel_end 
+                            ypixel_end 
+                            !x_min
+                            !x_max
+                            !y_min
+                            !y_max in
+    x_min := new_xmin; 
+    x_max := new_xmax; 
+    y_min := new_ymin; 
+    y_max := new_ymax; 
+    max_iteration := int_of_float (1.5 *. float !max_iteration);;
 

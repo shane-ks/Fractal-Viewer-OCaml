@@ -22,14 +22,12 @@ let xmax = 0.6 ;;
 let ymin = -.1.14 ;;
 let ymax = 1.14 ;;
 let color = true ;; 
-
 (* sets the max number of iterations of the fractal equation. Increasing the 
    max number of iterations makes it slower but gives a better picture. *)
 let max_step = 25;; 
 (* sets the threshold to stop iterating. Keep as default of 2.1 for z^2 + c*)
-
 let threshold = 2.1 ;;
 (* define the fractal equation below *)
 let define_fractal z c = 
-  CNum.add (CNum.mul z z) c ;;  
+  CNum.add (CNum.mul z z) c ;; 
 

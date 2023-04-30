@@ -14,6 +14,18 @@ open Mandelbrot ;;
 open Unix ;; 
 exception Program_quit ;; 
 
+(* type color_setting = 
+  | BlackWhite
+  | Monochrome
+  | Red
+  | Blue 
+  | Wild 
+
+let color_function (setting : color_setting) = 
+  match setting with
+  | BlackWhite ->   *)
+
+
 let pixel_to_coord (xpixel : int)
                    (ypixel : int) 
                    (x_min : float)
@@ -40,10 +52,6 @@ let coord_to_pixel (x_coord : float)
       int_of_float (((y_coord -. y_min) /. (y_max -. y_min)) *. float Config.height) in 
     xpixel, ypixel ;; 
 
-(* Whenever I implement a way to modify a current image and use that, or pass an 
-   image into depict_fractal / view / drag_rect, I will encounter issues where 
-   it zooms in to an area that wasn;t specified by the user. Not sure why this is happening *)
-
 let depict_fractal (width : int)
                    (height : int) 
                    (xmin : float)
@@ -53,29 +61,48 @@ let depict_fractal (width : int)
                    (color : bool)
                    (max_step : int) = 
   let delta_x, delta_y = 
-    (xmax -. xmin) /. float width, (ymax -. ymin) /. float height in 
-  for xpixel = 0 to (width - 1) do
-    let real = delta_x *. float xpixel +. xmin in
-    for ypixel  = 0 to (height - 1) do  
-      let imag = delta_y *. float ypixel +. ymin in  
-      let c  = CNum.define real imag in 
-      let iter_count, mandelbrot_set = Mandelbrot.in_mandelbrot CNum.zero c max_step in
+    (xmax -. xmin) /. float width, (ymax -. ymin) /. float height in
+  let rec xpixel_plot (xpixel : int) = 
+    if xpixel < width then 
+      let real = delta_x *. float xpixel +. xmin in
+      let rec ypixel_plot (ypixel : int) = 
+        if ypixel < height then 
+          let imag = delta_y *. float ypixel +. ymin in  
+          let c  = CNum.define real imag in 
+          let iter_count, mandelbrot_set = 
+            Mandelbrot.in_mandelbrot CNum.zero c max_step in
           if mandelbrot_set then 
             begin
               G.set_color G.black; 
               G.plot xpixel ypixel;
+              ypixel_plot (succ ypixel)
             end
           else if color && not mandelbrot_set then 
             begin 
-              let colg = int_of_float (255. *. (1. -. Stdlib.exp (-.2. *. (float iter_count) /. (float max_step))) ) in 
-              let colb = int_of_float (255. *. (1. -. Stdlib.exp (-.0.5 *. (float iter_count) /. (float max_step))) ) in 
+              let colg = 
+                int_of_float 
+                  (255. *. (1. -. Stdlib.exp (-.2. *. (float iter_count) 
+                    /. (float max_step))) ) in 
+              let colb = 
+                int_of_float 
+                  (255. *. (1. -. Stdlib.exp (-.0.5 *. (float iter_count) 
+                    /. (float max_step))) ) in 
               let point_color = G.rgb 160 colg colb in 
               G.set_color point_color;
               G.plot xpixel ypixel;
+              ypixel_plot (succ ypixel)
             end
-    done;
-  done;; 
+      in 
+      ypixel_plot 0;
+      xpixel_plot (succ xpixel)
+    else ()
+  in 
+  xpixel_plot 0 ;;   
 
+        
+
+
+      
 (* let depict_fractal (width : int)
                    (height : int) 
                    (xmin : float)

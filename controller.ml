@@ -7,6 +7,7 @@
    user interactions. *)
 
 open Graph;; 
+open Config;;
 exception Program_quit ;; 
 
 let loading () = 
@@ -39,7 +40,7 @@ let view (fractal : int array array) : (int * int) array =
   let box = Array.make 4 (0, 0) in 
   let clicks = ref 0 in 
   let init_x, init_y = (ref 0, ref 0) in 
-  let end_x, end_y = (ref 0, ref 0) in 
+  let end_x, end_y = (ref Config.width, ref Config.height) in 
   let fractal_bkg = G.make_image fractal in 
   let update_rect () = 
     begin
@@ -55,10 +56,18 @@ let view (fractal : int array array) : (int * int) array =
       G.synchronize ();
     end
   in
-  while !clicks <= 2 do 
+  while !clicks < 2 do 
     let e = 
       G.wait_next_event [Button_up; Button_down; Mouse_motion; Key_pressed] in 
     if e.key = 'q' then raise Program_quit
+    else if e.key = 'e' then 
+      begin
+        box.(0) <- !init_x, !init_y; 
+        box.(1) <- !end_x, !init_y; 
+        box.(2) <- !end_x, !end_y; 
+        box.(3) <- !init_x, !end_y;
+        clicks := 3
+      end 
     else if e.button && (!clicks <> 0) then 
       begin 
         end_x := e.mouse_x; 

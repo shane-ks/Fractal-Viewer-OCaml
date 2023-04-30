@@ -29,14 +29,14 @@ let main_loop () =
   while true do 
   (* view fractal *)
     current_image := depict_fractal Config.width 
-                                 Config.height 
-                                 !x_min 
-                                 !x_max 
-                                 !y_min
-                                 !y_max
-                                 Config.color
-                                 !max_iteration
-                                 !current_image;
+                                    Config.height 
+                                    !x_min 
+                                    !x_max 
+                                    !y_min
+                                    !y_max
+                                    Config.color
+                                    !max_iteration
+                                    !current_image;
     (* view fractal *)
     G.draw_image (G.make_image !current_image) 0 0 ; 
     G.synchronize (); 
@@ -62,7 +62,8 @@ let main_loop () =
     x_max := new_xmax; 
     y_min := new_ymin; 
     y_max := new_ymax; 
-    max_iteration := int_of_float (1.5 *. float !max_iteration);
+    max_iteration := int_of_float (1.15 *. float !max_iteration);
+    Controller.loading ();
   done;;
 
 

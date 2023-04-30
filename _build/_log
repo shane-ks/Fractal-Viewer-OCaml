@@ -1,20 +1,24 @@
 ### Starting build.
-# Target: graph.ml.depends, tags: { package(graphics), package(unix), extension:ml, file:graph.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package unix -package graphics -modules graph.ml > graph.ml.depends
-# Target: complexNum.ml.depends, tags: { package(graphics), package(unix), extension:ml, file:complexNum.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package unix -package graphics -modules complexNum.ml > complexNum.ml.depends
-# Target: config.ml.depends, tags: { package(graphics), package(unix), extension:ml, file:config.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package unix -package graphics -modules config.ml > config.ml.depends
-# Target: complexNum.cmo, tags: { package(graphics), package(unix), byte, compile, extension:cmo, extension:ml, file:complexNum.cmo, file:complexNum.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package unix -package graphics -o complexNum.cmo complexNum.ml
-# Target: mandelbrot.ml.depends, tags: { package(graphics), package(unix), extension:ml, file:mandelbrot.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package unix -package graphics -modules mandelbrot.ml > mandelbrot.ml.depends
-# Target: config.cmo, tags: { package(graphics), package(unix), byte, compile, extension:cmo, extension:ml, file:config.cmo, file:config.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package unix -package graphics -o config.cmo config.ml
-# Target: mandelbrot.cmo, tags: { package(graphics), package(unix), byte, compile, extension:cmo, extension:ml, file:mandelbrot.cmo, file:mandelbrot.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package unix -package graphics -o mandelbrot.cmo mandelbrot.ml
-# Target: graph.cmo, tags: { package(graphics), package(unix), byte, compile, extension:cmo, extension:ml, file:graph.cmo, file:graph.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package unix -package graphics -o graph.cmo graph.ml
-# Target: graph.byte, tags: { package(graphics), package(unix), byte, dont_link_with, extension:byte, file:graph.byte, link, ocaml, program, quiet, traverse }
-ocamlfind ocamlc -linkpkg -package unix -package graphics complexNum.cmo config.cmo mandelbrot.cmo graph.cmo -o graph.byte
+# Target: controller.ml.depends, tags: { package(graphics), extension:ml, file:controller.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package graphics -modules controller.ml > controller.ml.depends # cached
+# Target: config.ml.depends, tags: { package(graphics), extension:ml, file:config.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package graphics -modules config.ml > config.ml.depends # cached
+# Target: complexNum.ml.depends, tags: { package(graphics), extension:ml, file:complexNum.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package graphics -modules complexNum.ml > complexNum.ml.depends # cached
+# Target: complexNum.cmo, tags: { package(graphics), byte, compile, extension:cmo, extension:ml, file:complexNum.cmo, file:complexNum.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package graphics -o complexNum.cmo complexNum.ml # cached
+# Target: config.cmo, tags: { package(graphics), byte, compile, extension:cmo, extension:ml, file:config.cmo, file:config.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package graphics -o config.cmo config.ml # cached
+# Target: graph.ml.depends, tags: { package(graphics), extension:ml, file:graph.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package graphics -modules graph.ml > graph.ml.depends # cached
+# Target: mandelbrot.ml.depends, tags: { package(graphics), extension:ml, file:mandelbrot.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package graphics -modules mandelbrot.ml > mandelbrot.ml.depends # cached
+# Target: mandelbrot.cmo, tags: { package(graphics), byte, compile, extension:cmo, extension:ml, file:mandelbrot.cmo, file:mandelbrot.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package graphics -o mandelbrot.cmo mandelbrot.ml # cached
+# Target: graph.cmo, tags: { package(graphics), byte, compile, extension:cmo, extension:ml, file:graph.cmo, file:graph.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package graphics -o graph.cmo graph.ml # cached
+# Target: controller.cmo, tags: { package(graphics), byte, compile, extension:cmo, extension:ml, file:controller.cmo, file:controller.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package graphics -o controller.cmo controller.ml # cached
+# Target: controller.byte, tags: { package(graphics), byte, dont_link_with, extension:byte, file:controller.byte, link, ocaml, program, quiet, traverse }
+ocamlfind ocamlc -linkpkg -package graphics complexNum.cmo config.cmo mandelbrot.cmo graph.cmo controller.cmo -o controller.byte # cached
 # Compilation successful.

@@ -13,55 +13,35 @@ open Mandelbrot ;;
 open Unix ;; 
 exception Program_quit ;; 
 
-
-(* let initialize_image (rows : int) (col : int) : int array array = 
-    Array.init rows (fun i -> 
-      (Array.init col (fun j -> 0))) ;; 
-
-      let width = 800 ;;
-      let height = 600 ;; 
-      (* sets the minimum and maximum real value to compute *)
-      let xmin = -.2.05 ;;
-      let xmax = 0.6 ;;
-      (* sets the minimum and maximum imaginary value to compute *)
-      let ymin = -.1.14 ;;
-      let ymax = 1.14 ;;
-      let color = false ;;  *)
-
-
-(* I need for depict fractal to actually output an image so I can repeatedly 
-   display it while the user drags the rectangle... *)
-(* let depict_fractal (width : int)
-                   (height : int) 
-                   (xmin : float)
-                   (xmax : float)
-                   (ymin : float)
-                   (ymax : float) 
-                   (color : bool)
-                   (max_step : int) = 
+let pixel_to_coord (xpixel : int)
+                   (ypixel : int) 
+                   (x_min : float)
+                   (x_max : float)
+                   (y_min : float)
+                   (y_max : float)
+                   : float * float = 
   let delta_x, delta_y = 
-    (xmax -. xmin) /. float width, (ymax -. ymin) /. float height in 
-  for xpixel = 0 to (width - 1) do
-    let real = delta_x *. float xpixel +. xmin in
-    for ypixel  = 0 to (height - 1) do  
-      let imag = delta_y *. float ypixel +. ymin in  
-      let c  = CNum.define real imag in 
-      let iter_count, mandelbrot_set = Mandelbrot.in_mandelbrot CNum.zero c max_step in
-          if mandelbrot_set then 
-            begin
-              G.set_color G.black; 
-              G.plot xpixel ypixel;
-            end
-          else if color && not mandelbrot_set then 
-            begin 
-              let colg = int_of_float (255. *. (1. -. Stdlib.exp (-.2. *. (float iter_count) /. (float max_step))) ) in 
-              let colb = int_of_float (255. *. (1. -. Stdlib.exp (-.0.5 *. (float iter_count) /. (float max_step))) ) in 
-              let point_color = G.rgb 160 colg colb in 
-              G.set_color point_color;
-              G.plot xpixel ypixel;
-            end
-    done;
-  done;; *)
+    ((x_max -. x_min) /. float Config.width, (y_max -. y_min) /. float Config.height) in 
+  let xcoord = (delta_x *. float xpixel +. x_min) in 
+  let ycoord = (delta_y *. float ypixel +. y_min) in 
+  (xcoord, ycoord);; 
+
+let coord_to_pixel (x_coord : float) 
+                   (y_coord : float) 
+                   (x_min : float)
+                   (x_max : float)
+                   (y_min : float)
+                   (y_max : float)
+                   : int * int = 
+    let xpixel = 
+      int_of_float (((x_coord -. x_min) /. (x_max -. x_min)) *. float Config.width) in 
+    let ypixel = 
+      int_of_float (((y_coord -. y_min) /. (y_max -. y_min)) *. float Config.height) in 
+    xpixel, ypixel ;; 
+
+(* Whenever I implement a way to modify a current image and use that, or pass an 
+   image into depict_fractal / view / drag_rect, I will encounter issues where 
+   it zooms in to an area that wasn;t specified by the user. Not sure why this is happening *)
 
 let depict_fractal (width : int)
                    (height : int) 
@@ -96,24 +76,12 @@ let depict_fractal (width : int)
   done;; 
 
 
+
   (* ignore (G.read_key ()); (* Wait for a key press *)
   G.close_graph () ;;  *)
 
-let loading () = 
-  begin
-    G.set_color G.white;
-    G.fill_rect 0 0 70 20; 
-    G.moveto 5 5 ; 
-    G.set_color G.blue;
-    G.set_text_size 75;
-    G.draw_string "Loading...";
-    G.synchronize ()
-  end ;; 
-
+(* 
 let drag_rect () : (int * int) array = 
-  (* G.open_graph ""; 
-  G.resize_window width height;
-  G.auto_synchronize false; *)
   let fractal_bkg = G.get_image 0 0 width height in
   let box = Array.make 4 (0, 0) in 
   let clicks = ref 0 in 
@@ -170,22 +138,15 @@ let drag_rect () : (int * int) array =
         G.synchronize ();
       end
   done;
-  box ;; 
+  box ;;  *)
 
-
+(* 
 
 let main_loop () = 
-  (* let clicked = ref false in  *)
-  (* let active = ref true in *)
   let x_min = ref xmin in
   let x_max = ref xmax in
   let y_min = ref ymin in
   let y_max = ref ymax in
-
-  (* let x_start_box = ref 0 in 
-  let y_start_box = ref 0 in 
-  let x_end_box = ref 0 in 
-  let y_end_box = ref 0 in  *)
   
   let max_iteration = ref max_step in 
 
@@ -227,14 +188,14 @@ let main_loop () =
   in
   while true do 
       G.clear_graph (); 
-      depict_fractal width
-                    height
-                    !x_min
-                    !x_max 
-                    !y_min 
-                    !y_max
-                    color
-                    !max_iteration;
+      depict_fractal  width
+                      height
+                      !x_min
+                      !x_max 
+                      !y_min 
+                      !y_max
+                      color
+                      !max_iteration; 
       G.synchronize (); 
       ui_loop ();
   done ;;  
@@ -246,7 +207,7 @@ let () =
   G.set_window_title "Fractal Viewer";
   G.auto_synchronize false;
   main_loop (); 
-  G.close_graph ();; 
+  G.close_graph ();;  *)
 
 
 

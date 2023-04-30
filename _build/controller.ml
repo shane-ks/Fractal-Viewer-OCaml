@@ -35,8 +35,9 @@ let pixel_to_coord (xpixel : int)
     let ycoord = (delta_y *. float ypixel +. y_min) in 
       (xcoord, ycoord) ;; 
 
-(* 
-let view (fractal : image) : (int * int) array = 
+
+let view () : (int * int) array = 
+  let fractal = G.get_image 0 0 Config.width Config.height in
   let box = Array.make 4 (0, 0) in 
   let clicks = ref 0 in 
   let init_x, init_y = (ref 0, ref 0) in 
@@ -91,11 +92,11 @@ let view (fractal : image) : (int * int) array =
       end
   done;
   clicks := 0; 
-  box ;;  *)
+  box ;; 
 
-
-
-let view (fractal : image) : (int * int) array = 
+(* 
+let view (fractal : int array array) : (int * int) array = 
+  let fractal_bkg = G.make_image fractal in
   let box = Array.make 4 (0, 0) in 
   let clicks = ref 0 in 
   let init_x, init_y = (ref 0, ref 0) in 
@@ -112,7 +113,7 @@ let view (fractal : image) : (int * int) array =
         box.(2) <- !end_x, !end_y; 
         box.(3) <- !init_x, !end_y;
         G.clear_graph (); 
-        G.draw_image fractal 0 0; 
+        G.draw_image fractal_bkg 0 0; 
         G.set_color G.black; 
         G.set_line_width 5; 
         G.draw_poly box;
@@ -129,7 +130,7 @@ let view (fractal : image) : (int * int) array =
         box.(1) <- !end_x, !init_y; 
         box.(2) <- !end_x, !end_y; 
         box.(3) <- !init_x, !end_y;
-        G.draw_image fractal 0 0; 
+        G.draw_image fractal_bkg 0 0; 
         G.set_color G.black; 
         G.set_line_width 5; 
         G.draw_poly box;
@@ -144,14 +145,14 @@ let view (fractal : image) : (int * int) array =
         box.(2) <- !end_x, !end_y; 
         box.(3) <- !init_x, !end_y;
         G.clear_graph (); 
-        G.draw_image fractal 0 0; 
+        G.draw_image fractal_bkg 0 0; 
         G.set_color G.black; 
         G.set_line_width 5; 
         G.draw_poly box;
         G.synchronize ();
       end
   done;
-  box ;; 
+  box ;;  *)
 
 (* 
 let main_loop () = 

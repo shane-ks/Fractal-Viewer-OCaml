@@ -31,12 +31,12 @@ let main_loop () =
   let y_min = ref Config.ymin in
   let y_max = ref Config.ymax in
   let max_iteration = ref Config.max_step in 
-  let current_image = 
-    ref (Array.make Config.height (Array.make Config.width 0)) in 
+  let blank_image = 
+    Array.make Config.height (Array.make Config.width 0) in 
 
   while true do 
   (* view fractal *)
-    current_image := depict_fractal Config.width 
+    let current_image = depict_fractal Config.width 
                                     Config.height 
                                     !x_min 
                                     !x_max 
@@ -44,10 +44,10 @@ let main_loop () =
                                     !y_max
                                     Config.color
                                     !max_iteration
-                                    !current_image;
+                                    blank_image in 
     (* view fractal *)
     G.clear_graph (); 
-    let fractal = G.make_image !current_image in 
+    let fractal = G.make_image current_image in 
     G.draw_image fractal 0 0 ; 
     G.synchronize (); 
     (* user selecting area to zoom into *)

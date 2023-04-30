@@ -16,7 +16,6 @@ module G = Graphics ;;
 open Config ;; 
 open Graph ;; 
 open Mandelbrot ;;
-exception Program_quit ;; 
 
 
 

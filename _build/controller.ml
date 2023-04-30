@@ -18,6 +18,31 @@ let loading () =
     G.synchronize ()
   end ;; 
 
+let cursor_pos (xpos : int)
+               (ypos : int) 
+               (x_min : float)
+               (x_max : float)
+               (y_min : float)
+               (y_max : float) 
+               : unit = 
+  begin
+    let real, imag = 
+      Graph.pixel_to_coord xpos
+                           ypos 
+                           x_min
+                           x_max
+                           y_min
+                           y_max in 
+    G.set_color G.white;
+    G.fill_rect (Config.width / 2) 0 200 20; 
+    G.moveto (Config.width / 2 + 5) 0 ; 
+    G.set_color G.blue;
+    G.set_text_size 50;
+    let pos_string = 
+      (string_of_float real) ^ " + " ^ (string_of_float imag) ^ "i" in 
+    G.draw_string ("Position: " ^ pos_string); 
+    G.synchronize ()
+  end
 
 let ui_loop (x_min : float ref) 
             (x_max : float ref)
@@ -46,10 +71,16 @@ let ui_loop (x_min : float ref)
       G.synchronize ();
     end
   in
-  
+
   let select_pane () : (int * int) array = 
-    while !clicks <= 2 do 
+    while !clicks < 2 do 
       let e = G.wait_next_event [Button_up; Button_down; Mouse_motion; Key_pressed] in 
+      (* cursor_pos e.mouse_x 
+                 e.mouse_y 
+                 !x_min 
+                 !x_max
+                 !y_min
+                 !y_max;  *)
       if e.key = 'q' then 
         begin
           quit := true; 
@@ -89,7 +120,7 @@ let ui_loop (x_min : float ref)
     pane ; 
   in 
 
-  let e = G.wait_next_event [Key_pressed; Button_up; Button_down] in
+  let e = G.wait_next_event [Key_pressed; Button_up; Mouse_motion; Button_down] in
     if e.key = 'q' then quit := true
     else if e.key = 'e' then 
       max_iteration := int_of_float (1.5 *. float !max_iteration)
@@ -122,87 +153,3 @@ let ui_loop (x_min : float ref)
       y_max := new_ymax; 
       max_iteration := int_of_float (1.5 *. float !max_iteration);;
 
-
-
-(* 
-let ui_loop () =  
-  let e = G.wait_next_event [Key_pressed; Button_up; Button_down] in
-  if e.key = 'q' then raise Program_quit
-  else if e.key = 'e' then 
-    max_iteration := int_of_float (1.5 *. float !max_iteration)
-  else 
-    G.set_color G.black; 
-    G.set_line_width 5; 
-    let box = drag_rect () in 
-    G.draw_poly box;
-    G.synchronize ();
-    loading (); 
-    let xpixel_start, ypixel_start = box.(0) in 
-    let xpixel_end, ypixel_end = box.(2) in 
-    let new_xmin, new_ymin = pixel_to_coord xpixel_start ypixel_start in 
-    let new_xmax, new_ymax = pixel_to_coord xpixel_end ypixel_end in
-    x_min := new_xmin; 
-    x_max := new_xmax; 
-    y_min := new_ymin; 
-    y_max := new_ymax; 
-    max_iteration := int_of_float (1.5 *. float !max_iteration);
-
-
-let drag_rect () : (int * int) array = 
-  let fractal_bkg = G.get_image 0 0 width height in
-  let box = Array.make 4 (0, 0) in 
-  let clicks = ref 0 in 
-  let init_x, init_y = (ref 0, ref 0) in 
-  let end_x, end_y = (ref 0, ref 0) in 
-  while !clicks <= 2 do 
-    let e = G.wait_next_event [Button_up; Button_down; Mouse_motion; Key_pressed] in 
-    if e.button && (!clicks <> 0) then 
-      begin 
-        end_x := e.mouse_x; 
-        end_y := e.mouse_y; 
-        incr clicks; 
-        box.(0) <- !init_x, !init_y; 
-        box.(1) <- !end_x, !init_y; 
-        box.(2) <- !end_x, !end_y; 
-        box.(3) <- !init_x, !end_y;
-        G.clear_graph (); 
-        G.draw_image fractal_bkg 0 0; 
-        G.set_color G.black; 
-        G.set_line_width 5; 
-        G.draw_poly box;
-        G.synchronize ();
-      end 
-    else if e.button && (!clicks = 0)then 
-      begin
-        init_x := e.mouse_x; 
-        init_y := e.mouse_y; 
-        end_x := e.mouse_x; 
-        end_y := e.mouse_y;
-        incr clicks; 
-        box.(0) <- !init_x, !init_y; 
-        box.(1) <- !end_x, !init_y; 
-        box.(2) <- !end_x, !end_y; 
-        box.(3) <- !init_x, !end_y;
-        G.draw_image fractal_bkg 0 0; 
-        G.set_color G.black; 
-        G.set_line_width 5; 
-        G.draw_poly box;
-        G.synchronize ();
-      end 
-    else if !clicks <> 0 then 
-      begin 
-        end_x := e.mouse_x; 
-        end_y := e.mouse_y; 
-        box.(0) <- !init_x, !init_y; 
-        box.(1) <- !end_x, !init_y; 
-        box.(2) <- !end_x, !end_y; 
-        box.(3) <- !init_x, !end_y;
-        G.clear_graph (); 
-        G.draw_image fractal_bkg 0 0; 
-        G.set_color G.black; 
-        G.set_line_width 5; 
-        G.draw_poly box;
-        G.synchronize ();
-      end
-  done;
-  box ;;   *)

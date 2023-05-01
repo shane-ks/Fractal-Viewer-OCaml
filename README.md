@@ -5,4 +5,4 @@ This program will generate images of the Mandelbrot set and other arbitrary poly
 
 <img width="1279" alt="Screenshot 2023-04-30 at 9 43 59 PM" src="https://user-images.githubusercontent.com/35178804/235389157-741f7a62-5251-49bc-adf6-bd4edf77a3e7.png">
 
-To use the program, just run the command "make all" followed by "./main.byte". To zoom into an area, just click on the screen once and then again to denote the area. Press 'q' to quit or 'e' to enhance the picture. Enhancing is done automatically as the user zooms by increasing the max number of iterations.
+To use the program, just run the command "make all" followed by "./main.byte". To zoom into an area, just click on the screen once and then again to denote the area. Press 'q' to quit or 'e' to enhance the picture by increasing the number of iterations. 

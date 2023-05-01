@@ -31,3 +31,19 @@ let threshold = 2.1 ;;
 let define_fractal z c = 
   CNum.add (CNum.mul z z) c ;; 
 
+(*
+Alternative fractals to view. Note that the x and y ranges will need to be 
+changed. 
+
+f(z) = z^3 + c: 
+let define_fractal z c = 
+  CNum.add (CNum z (CNum.mul z z)) c ;; 
+
+f(z) = z^4 + c: 
+let define_fractal z c = 
+  CNum.add (CNum.mul (CNum z (CNum.mul z z)) z) c ;;  
+
+f(z) = z^5 + c: 
+let define_fractal z c = 
+  CNum.add (CNum.mul (CNum.mul (CNum z (CNum.mul z z)) z) z) c ;;  
+*)  

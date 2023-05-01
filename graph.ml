@@ -7,27 +7,13 @@
 with if it is contained or not contained in the Mandelbrot set, as determined 
 by mandelbrot.ml *)
 
-open ComplexNum ;; 
 module G = Graphics ;;
 open Graphics ;; 
 open Config ;; 
 open Mandelbrot ;;
-open Unix ;; 
-exception Program_quit ;; 
+open ComplexNum ;; 
 
-(* type color_setting = 
-  | BlackWhite
-  | Monochrome
-  | Red
-  | Blue 
-  | Wild 
-
-let color_function (setting : color_setting) = 
-  match setting with
-  | BlackWhite ->   *)
-
-
-let pixel_to_coord (xpixel : int)
+let coord_of_pixel (xpixel : int)
                    (ypixel : int) 
                    (x_min : float)
                    (x_max : float)
@@ -40,7 +26,7 @@ let pixel_to_coord (xpixel : int)
   let ycoord = (delta_y *. float ypixel +. y_min) in 
   (xcoord, ycoord);; 
 
-let coord_to_pixel (x_coord : float) 
+let pixel_of_coord (x_coord : float) 
                    (y_coord : float) 
                    (x_min : float)
                    (x_max : float)
@@ -87,9 +73,9 @@ let depict_fractal (width : int)
                 |> ( *. ) 255. 
                 |> int_of_float in 
               let colg = color_function (-.2.) in  
-              let colb = color_function (-.0.5) in 
+              let colb = color_function (-.0.8) in 
               let point_color = G.rgb 160 colg colb in 
-              G.set_color point_color;
+              G.set_color point_color; 
               G.plot xpixel ypixel;
               ypixel_plot (succ ypixel)
             end
@@ -100,46 +86,6 @@ let depict_fractal (width : int)
   in 
   xpixel_plot 0 ;;   
 
-        
 
 
-      
-(* let depict_fractal (width : int)
-                   (height : int) 
-                   (xmin : float)
-                   (xmax : float)
-                   (ymin : float)
-                   (ymax : float) 
-                   (color : bool)
-                   (max_step : int) 
-                   : image = 
-  let init_image = 
-    Array.make Config.height (Array.make Config.width 0) in 
-  let mandelbrot_calculation (xpixel : int) (ypixel : int) : int = 
-      let delta_x, delta_y = 
-        (xmax -. xmin) /. float width, (ymax -. ymin) /. float height in 
-      let real = (delta_x *. float xpixel +. xmin) in 
-      let imag = (delta_y *. float ypixel +. ymin) in
-      let c = CNum.define real imag in 
-      let iter_count, mandelbrot_set = 
-        Mandelbrot.in_mandelbrot CNum.zero c max_step in 
-      if mandelbrot_set then G.rgb 0 0 0 
-      else 
-          if color && not mandelbrot_set then 
-            let colg = 
-              int_of_float 
-                (255. *. (1. -. Stdlib.exp (-.2. *. (float iter_count) 
-                  /. (float max_step)))) in 
-            let colb = 
-              int_of_float 
-                (255. *. (1. -. Stdlib.exp (-.0.5 *. (float iter_count) 
-                  /. (float max_step))) ) in 
-            G.rgb 160 colg colb 
-          else G.rgb 255 255 255
-  in
-  G.make_image 
-    (Array.mapi  (fun i row -> 
-      Array.mapi (fun j _current_color -> 
-        mandelbrot_calculation j i) row) init_image) ;;
 
- *)

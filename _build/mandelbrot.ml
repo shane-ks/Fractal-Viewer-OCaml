@@ -26,8 +26,6 @@ module type MANDELBROT =
 
   type t = CNum.t
 
-  (* val max_step : int  *)
-
   val threshold : float 
 
   val mandelbrot : t -> t -> t
@@ -40,6 +38,7 @@ module type MANDELBROT =
   
   end ;; 
 
+(* creates the functor that instantiates the module used for computations *)
 module MakeMandelbrot (Elements : ELEMENTS) 
   : (MANDELBROT) = 
   struct 
@@ -61,6 +60,8 @@ module MakeMandelbrot (Elements : ELEMENTS)
       mul ((sub (mandelbrot z1 z2) (conj (mandelbrot z1 z2)))) (inv two_i) in 
     imag imaginary
 
+  (* returns the number of iterations it took to escape threshold and a 
+     bool representing if the point is in the Mandelbrot set or not. *)
   let in_mandelbrot (z : t) (c : t) (max_step : int) : int * bool = 
     let rec iter_mult z1 count = 
       let magnitude = CNum.magn z1 in 

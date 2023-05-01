@@ -2,21 +2,10 @@
                     CS51 Final Project
                       Shane Kissinger
  *)
-
 (* Description: This file runs the program and handles user interaction. *)
+module G = Graphics;;
 
-(*
-Step 1: Simplify and organize code while keeping same functionality
-Step 2: Try to make more efficient
-Step 3: Add functional / recursive elements.
-Step 4: Add classes.    
-*)
-open ComplexNum ;; 
-module G = Graphics ;;
-open Config ;; 
-open Graph ;; 
-open Mandelbrot ;;
-
+(* creates the viewing window *)
 let initialize_window () = 
   G.open_graph ""; 
   G.resize_window Config.width Config.height;
@@ -24,35 +13,31 @@ let initialize_window () =
   G.auto_synchronize false;
   G.display_mode false;;
 
+(* the main loop of the program *)
 let rec main_loop (width : int)
-              (height : int)
-              (x_min : float ref) 
-              (x_max : float ref)
-              (y_min : float ref)
-              (y_max : float ref)
-              (max_iteration : int ref)
-              (quit_loop : bool ref) =
+                  (height : int)
+                  (x_min : float ref) 
+                  (x_max : float ref)
+                  (y_min : float ref)
+                  (y_max : float ref)
+                  (max_iteration : int ref)
+                  (quit_loop : bool ref) 
+                  : unit =
   initialize_window (); 
   if not !quit_loop then 
     begin 
       G.clear_graph (); 
+      (* draws the fractal *)
       Graph.depict_fractal width
                           height
                           !x_min
                           !x_max 
                           !y_min 
                           !y_max
-                          color
+                          Config.color
                           !max_iteration;
-      (* G.draw_image (Graph.depict_fractal width
-                          height
-                          !x_min
-                          !x_max 
-                          !y_min 
-                          !y_max
-                          color
-                          !max_iteration) 0 0 ; *)
       G.synchronize (); 
+      (* handles user input *)
       Controller.ui_loop x_min 
                         x_max 
                         y_min 
@@ -69,48 +54,11 @@ let () =
   let y_max = ref Config.ymax in 
   let max_iteration = ref Config.max_step in 
   let quit_loop = ref false in  
-    main_loop width height x_min x_max y_min y_max max_iteration quit_loop ;; 
-(* 
-let main_loop () = 
-  G.open_graph ""; 
-  G.resize_window Config.width Config.height;
-  G.set_window_title "Fractal Viewer";
-  G.auto_synchronize false;
-
-  (* initialize parameters *)
-  let x_min = ref Config.xmin in
-  let x_max = ref Config.xmax in
-  let y_min = ref Config.ymin in
-  let y_max = ref Config.ymax in
-  let max_iteration = ref Config.max_step in 
-  let quit_loop = ref false in 
-
-  while not !quit_loop do 
-    G.clear_graph (); 
-    Graph.depict_fractal width
-                         height
-                         !x_min
-                         !x_max 
-                         !y_min 
-                         !y_max
-                         color
-                         !max_iteration;
-    (* G.draw_image (Graph.depict_fractal width
-                         height
-                         !x_min
-                         !x_max 
-                         !y_min 
-                         !y_max
-                         color
-                         !max_iteration) 0 0 ; *)
-    G.synchronize (); 
-    Controller.ui_loop x_min 
-                       x_max 
-                       y_min 
-                       y_max
-                       max_iteration
-                       quit_loop; 
-  done ;; 
-   *)
-(* let () = 
-  main_loop ();;  *)
+    main_loop Config.width 
+              Config.height 
+              x_min 
+              x_max 
+              y_min 
+              y_max 
+              max_iteration 
+              quit_loop ;; 

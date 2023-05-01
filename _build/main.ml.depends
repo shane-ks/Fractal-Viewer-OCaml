@@ -1,1 +1,1 @@
-main.ml: ComplexNum Config Controller Graph Graphics Mandelbrot
+main.ml: Config Controller Graph Graphics

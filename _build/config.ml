@@ -16,11 +16,11 @@ open ComplexNum ;;
 let width = 800 ;;
 let height = 600 ;; 
 (* sets the minimum and maximum real value to compute *)
-let xmin = -.4.05 ;;
-let xmax = 3.6 ;;
+let xmin = -.2.05 ;;
+let xmax = 0.6 ;;
 (* sets the minimum and maximum imaginary value to compute *)
-let ymin = -.3.14 ;;
-let ymax = 3.14 ;;
+let ymin = -.1.14 ;;
+let ymax = 1.14 ;;
 let color = true ;; 
 (* sets the max number of iterations of the fractal equation. Increasing the 
    max number of iterations makes it slower but gives a better picture. *)
@@ -28,17 +28,16 @@ let max_step = 25;;
 (* sets the threshold to stop iterating. Keep as default of 2.1 for z^2 + c*)
 let threshold = 2.1 ;;
 (* define the fractal equation below *)
-(* let define_fractal z c = 
-  CNum.add (CNum.mul z z) c ;;  *)
 let define_fractal z c = 
-  CNum.add (CNum.mul z (CNum.mul z z)) c ;; 
+  CNum.add (CNum.mul z z) c ;; 
+
 (*
 Alternative fractals to view. Note that the x and y ranges will need to be 
 changed. 
 
 f(z) = z^3 + c: 
 let define_fractal z c = 
-  CNum.add (CNum z (CNum.mul z z)) c ;; 
+  CNum.add (CNum.mul z (CNum.mul z z)) c ;; 
 
 f(z) = z^4 + c: 
 let define_fractal z c = 

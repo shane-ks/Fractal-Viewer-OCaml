@@ -37,7 +37,7 @@ changed.
 
 f(z) = z^3 + c: 
 let define_fractal z c = 
-  CNum.add (CNum z (CNum.mul z z)) c ;; 
+  CNum.add (CNum.mul z (CNum.mul z z)) c ;; 
 
 f(z) = z^4 + c: 
 let define_fractal z c = 

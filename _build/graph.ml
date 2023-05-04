@@ -60,7 +60,7 @@ let depict_fractal (width : int)
             Mandelbrot.in_mandelbrot CNum.zero c max_step in
           if mandelbrot_set then 
             begin
-              G.set_color G.black; 
+              G.set_color (G.rgb 0 0 0); 
               G.plot xpixel ypixel;
               ypixel_plot (succ ypixel)
             end
@@ -79,6 +79,8 @@ let depict_fractal (width : int)
               G.plot xpixel ypixel;
               ypixel_plot (succ ypixel)
             end
+          else
+            ypixel_plot (succ ypixel)
       in 
       ypixel_plot 0;
       xpixel_plot (succ xpixel)

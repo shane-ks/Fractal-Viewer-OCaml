@@ -1,3 +1,8 @@
+(*
+                    CS51 Final Project
+                      Shane Kissinger
+ *)
+
 (* Description: This file configures the Mandelbrot set viewer. *)
 
 (*

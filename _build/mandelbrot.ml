@@ -1,3 +1,8 @@
+(*
+                    CS51 Final Project
+                      Shane Kissinger
+ *)
+
 (* Description: This file creates and implements a recursion for the function 
    f(z) = z^2 + c for complex values c, evaluated at z = 0. This code 
    determines which points are in the Mandelbrot set and which are not *)

@@ -1,3 +1,7 @@
+(*
+                    CS51 Final Project
+                      Shane Kissinger
+ *)
 (* Description: This file runs the program and handles user interaction. *)
 module G = Graphics;;
 

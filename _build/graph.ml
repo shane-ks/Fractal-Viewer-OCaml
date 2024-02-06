@@ -1,3 +1,8 @@
+(*
+                    CS51 Final Project
+                      Shane Kissinger
+ *)
+
 (* Description: This file graphs the points in a grid with a color associated 
 with if it is contained or not contained in the Mandelbrot set, as determined 
 by mandelbrot.ml *)

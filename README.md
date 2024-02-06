@@ -1,9 +1,10 @@
-# OCaml Mandelbrot Set Viewer 
+# OCaml Mandelbrot Set Viewer
+
 This program will generate images of the Mandelbrot set and other arbitrary polynomials.
 
 <img width="1276" alt="Screenshot 2023-04-30 at 9 20 40 PM" src="https://user-images.githubusercontent.com/35178804/235389121-f39897b5-2788-4c73-a6f7-96edf9797e19.png">
 
-To use the program, just run the command `make all` followed by `./main.byte`. To zoom into an area, just click on the screen once and then again to denote the area. Press 'q' to quit or 'e' to enhance the picture by increasing the number of iterations. You can adjust the resolution, coloring, function to be used for fractal generation, and complex region to calculate. 
+To use the program, just run the command `make all` followed by `./main.byte`. It uses te OCaml Graphics module. To zoom into an area, just click on the screen once and then again to denote the area. Press 'q' to quit or 'e' to enhance the picture by increasing the number of iterations. You can adjust the resolution, coloring, function to be used for fractal generation, and complex region to calculate.
 
 Some pictures generated with the software:
 

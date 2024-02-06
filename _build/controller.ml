@@ -1,3 +1,8 @@
+(*
+                    CS51 Final Project
+                      Shane Kissinger
+ *)
+
 (* Description: This file handles all of the user interaction with the UI. *)
 module G = Graphics ;;
 

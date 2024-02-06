@@ -1,3 +1,8 @@
+(*
+                    CS51 Final Project
+                      Shane Kissinger
+ *)
+
 (* Description: This file creates and implements a way to manipluate complex 
    numbers in OCaml.*)
 

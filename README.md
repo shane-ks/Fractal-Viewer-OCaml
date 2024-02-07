@@ -4,7 +4,14 @@ This program will generate images of the Mandelbrot set and other arbitrary poly
 
 <img width="1276" alt="Screenshot 2023-04-30 at 9 20 40 PM" src="https://user-images.githubusercontent.com/35178804/235389121-f39897b5-2788-4c73-a6f7-96edf9797e19.png">
 
-To use the program, first install xquartz and run `opam install graphics`. The version of OCaml used was `4.12.0`. Then, just run the command `make all` followed by `./main.byte`. It uses the OCaml Graphics module. To zoom into an area, just click on the screen once and then again to denote the area. Press 'q' to quit or 'e' to enhance the picture by increasing the number of iterations. You can adjust the resolution, coloring, function to be used for fractal generation, and complex region to calculate.
+To use the program: 
+1. Install xquartz. If you're on MacOS, you can install it with homebrew via `brew install xquartz`. Otherwise, you can install it from their website. 
+2. The version of OCaml I used was `4.12.0`, so ensure you have an environment with that version. 
+3. Install OCaml's graphics module with `opam install graphics`. 
+4. Run `make all`.
+5. Run `./main.byte`. 
+
+To zoom into an area, just click on the screen once and then again to denote the area. Press `q` to quit or `e` to enhance the picture by increasing the number of iterations. You can adjust the resolution, coloring, function to be used for fractal generation, and complex region to calculate. All configuration settings are in `config.ml`. 
 
 Some pictures generated with the software:
 
